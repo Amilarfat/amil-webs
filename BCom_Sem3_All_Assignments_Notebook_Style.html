@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+<title>AMIL — Portfolio</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+:root{
+ --bg:#05060c;
+ --accent:#6ea8ff;
+ --accent2:#c084fc;
+ --accent3:#22d3ee;
+ --gold:#ffd47a;
+ --text:#eef2ff;
+ --muted:#8b96b8;
+ --hand:"Segoe Print","Bradley Hand","Comic Sans MS",sans-serif;
+ --paper:#fdfbf2;--ink:#1b3f8f;--ink-red:#b02828;--ink-dark-red:#a32222;
+ --ink-green:#1f7a3f;--rule:rgba(122,162,212,.55);--margin-line:#e0918f;
+ --lh:32px;--pad-top:92px;
+}
+body{
+ background:var(--bg);color:var(--text);
+ font-family:'Segoe UI',system-ui,-apple-system,Roboto,sans-serif;
+ overflow-x:hidden;min-height:100vh;
+ -webkit-font-smoothing:antialiased;
+}
+
+/* ================= CINEMATIC BACKDROP ================= */
+.bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.bg::before{
+ content:"";position:absolute;inset:-30%;
+ background:
+  radial-gradient(circle at 15% 10%,rgba(110,168,255,.35),transparent 42%),
+  radial-gradient(circle at 85% 15%,rgba(192,132,252,.30),transparent 45%),
+  radial-gradient(circle at 50% 95%,rgba(34,211,238,.22),transparent 55%),
+  linear-gradient(180deg,#05060c 0%,#0a0f22 45%,#05060c 100%);
+ animation:aurora 22s ease-in-out infinite alternate;
+}
+@keyframes aurora{
+ 0%{transform:scale(1) rotate(0deg)}
+ 50%{transform:scale(1.15) rotate(3deg)}
+ 100%{transform:scale(1.08) rotate(-3deg)}
+}
+/* 3D grid floor */
+.grid-floor{
+ position:fixed;left:-80%;right:-80%;bottom:-10vh;height:75vh;
+ background-image:
+  linear-gradient(rgba(110,168,255,.40) 1.2px,transparent 1.2px),
+  linear-gradient(90deg,rgba(110,168,255,.40) 1.2px,transparent 1.2px);
+ background-size:70px 70px;
+ transform:perspective(400px) rotateX(75deg);
+ transform-origin:bottom center;
+ -webkit-mask-image:linear-gradient(to top,#000 0%,rgba(0,0,0,.4) 40%,transparent 80%);
+ mask-image:linear-gradient(to top,#000 0%,rgba(0,0,0,.4) 40%,transparent 80%);
+ animation:gridMove 6s linear infinite;
+ opacity:.65;
+}
+@keyframes gridMove{from{background-position:0 0}to{background-position:0 70px}}
+/* floating particles */
+.particles{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.particle{
+ position:absolute;border-radius:50%;
+ background:radial-gradient(circle,#fff,rgba(110,168,255,.4) 60%,transparent);
+ box-shadow:0 0 8px rgba(110,168,255,.8);
+ animation:floatP linear infinite;
+}
+@keyframes floatP{
+ 0%{transform:translateY(100vh) scale(0);opacity:0}
+ 10%{opacity:1}
+ 90%{opacity:1}
+ 100%{transform:translateY(-10vh) scale(1);opacity:0}
+}
+/* stars */
+.stars{
+ position:fixed;inset:0;z-index:0;pointer-events:none;
+ background-image:
+  radial-gradient(1.6px 1.6px at 12% 22%,#fff,transparent),
+  radial-gradient(1.4px 1.4px at 78% 14%,#cfe0ff,transparent),
+  radial-gradient(1.8px 1.8px at 34% 68%,#fff,transparent),
+  radial-gradient(1.4px 1.4px at 88% 62%,#d8e6ff,transparent),
+  radial-gradient(1.6px 1.6px at 56% 38%,#fff,transparent),
+  radial-gradient(1.3px 1.3px at 22% 86%,#cfe0ff,transparent),
+  radial-gradient(1.5px 1.5px at 66% 88%,#fff,transparent),
+  radial-gradient(1.4px 1.4px at 44% 12%,#fff,transparent);
+ animation:twinkle 7s ease-in-out infinite alternate;
+}
+@keyframes twinkle{from{opacity:.4}to{opacity:.95}}
+
+/* ================= NAV ================= */
+.nav{
+ position:fixed;top:0;left:0;right:0;z-index:600;
+ display:flex;align-items:center;justify-content:space-between;
+ padding:16px 32px;transition:.4s;
+}
+.nav.scrolled{
+ background:rgba(5,6,12,.78);
+ -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
+ border-bottom:1px solid rgba(255,255,255,.06);
+ padding:12px 32px;
+}
+.brand{
+ display:flex;align-items:center;gap:12px;
+ font-weight:900;letter-spacing:4px;font-size:15px;
+ color:#fff;text-decoration:none;
+}
+.brand-dot{
+ width:12px;height:12px;border-radius:50%;
+ background:linear-gradient(135deg,var(--accent),var(--accent2));
+ box-shadow:0 0 16px var(--accent),0 0 32px rgba(110,168,255,.5);
+ animation:brandPulse 2s ease-in-out infinite;
+}
+@keyframes brandPulse{
+ 0%,100%{transform:scale(1);box-shadow:0 0 16px var(--accent),0 0 32px rgba(110,168,255,.5)}
+ 50%{transform:scale(1.3);box-shadow:0 0 24px var(--accent2),0 0 48px rgba(192,132,252,.7)}
+}
+.brand b{
+ background:linear-gradient(120deg,#fff 20%,#9dc0ff 60%,#c084fc 90%);
+ -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.nav-links{display:flex;gap:4px;list-style:none}
+.nav-links a{
+ display:block;padding:9px 16px;border-radius:10px;
+ color:var(--muted);text-decoration:none;
+ font-size:13px;font-weight:700;letter-spacing:.6px;
+ transition:.25s;text-transform:uppercase;
+}
+.nav-links a:hover{color:#fff;background:rgba(255,255,255,.07);transform:translateY(-2px)}
+.burger{display:none;width:42px;height:42px;border-radius:12px;
+ background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+ cursor:pointer;position:relative}
+.burger i{position:absolute;left:11px;right:11px;height:2px;border-radius:2px;
+ background:#eef2ff;transition:.3s}
+.burger i:nth-child(1){top:14px}
+.burger i:nth-child(2){top:20px}
+.burger i:nth-child(3){top:26px}
+.burger.open i:nth-child(1){top:20px;transform:rotate(45deg)}
+.burger.open i:nth-child(2){opacity:0}
+.burger.open i:nth-child(3){top:20px;transform:rotate(-45deg)}
+
+/* ================= LAYOUT ================= */
+.wrap{position:relative;z-index:2;max-width:1240px;margin:0 auto;padding:0 28px}
+
+/* ================= HERO ================= */
+.hero{
+ min-height:100vh;display:flex;flex-direction:column;
+ align-items:center;justify-content:center;text-align:center;
+ padding:130px 0 90px;
+ perspective:1400px;
+}
+.hero-badge{
+ display:inline-flex;align-items:center;gap:10px;
+ padding:8px 20px;border-radius:99px;
+ border:1px solid rgba(110,168,255,.35);
+ background:rgba(110,168,255,.08);
+ color:#a9c6ff;font-size:11.5px;font-weight:800;
+ letter-spacing:3px;text-transform:uppercase;
+ margin-bottom:36px;
+ transform:translateZ(60px);
+ animation:heroIn 1s .1s both;
+}
+.hero-badge .b-dot{
+ width:7px;height:7px;border-radius:50%;
+ background:var(--accent3);
+ box-shadow:0 0 14px var(--accent3);
+ animation:pulse 1.8s infinite;
+}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.6);opacity:.5}}
+
+/* ====== THE NAME (main star) ====== */
+.hero-name-wrap{
+ position:relative;display:inline-block;
+ transform-style:preserve-3d;
+ animation:heroIn 1.1s .25s both;
+}
+.hero-name{
+ position:relative;
+ font-size:clamp(4.2rem,17vw,13rem);
+ font-weight:900;
+ letter-spacing:.06em;
+ line-height:.9;
+ transform-style:preserve-3d;
+ animation:nameFloat 6s ease-in-out infinite;
+}
+@keyframes nameFloat{
+ 0%,100%{transform:translateY(0) rotateX(0)}
+ 50%{transform:translateY(-14px) rotateX(-3deg)}
+}
+.hero-name span{
+ position:relative;z-index:5;
+ background:linear-gradient(180deg,#ffffff 0%,#dbe7ff 30%,#6ea8ff 70%,#c084fc 100%);
+ -webkit-background-clip:text;background-clip:text;color:transparent;
+ filter:drop-shadow(0 8px 40px rgba(110,168,255,.6)) drop-shadow(0 0 80px rgba(192,132,252,.4));
+}
+/* 3D extrusion layers */
+.hero-name::before,
+.hero-name::after{
+ content:attr(data-text);
+ position:absolute;inset:0;
+ color:transparent;
+ pointer-events:none;
+}
+.hero-name::before{
+ -webkit-text-stroke:2px rgba(110,168,255,.5);
+ transform:translate3d(10px,10px,-40px);
+ filter:blur(.7px);
+ z-index:3;
+}
+.hero-name::after{
+ -webkit-text-stroke:2px rgba(192,132,252,.35);
+ transform:translate3d(20px,20px,-80px);
+ filter:blur(1.5px);
+ z-index:2;
+}
+/* glow behind name */
+.hero-name-wrap::before{
+ content:"";position:absolute;
+ top:50%;left:50%;transform:translate(-50%,-50%);
+ width:70%;height:120%;
+ background:radial-gradient(ellipse,rgba(110,168,255,.35),transparent 65%);
+ filter:blur(50px);z-index:0;
+ animation:glowPulse 4s ease-in-out infinite;
+}
+@keyframes glowPulse{
+ 0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.8}
+ 50%{transform:translate(-50%,-50%) scale(1.15);opacity:1}
+}
+/* orbiting ring */
+.orbit{
+ position:absolute;top:50%;left:50%;
+ width:105%;height:105%;
+ transform:translate(-50%,-50%) rotateX(72deg);
+ border:1.5px solid rgba(110,168,255,.35);
+ border-radius:50%;
+ box-shadow:0 0 40px rgba(110,168,255,.3) inset;
+ animation:orbitSpin 14s linear infinite;
+ pointer-events:none;
+}
+.orbit.o2{
+ width:125%;height:125%;
+ border-color:rgba(192,132,252,.28);
+ animation-duration:20s;animation-direction:reverse;
+}
+@keyframes orbitSpin{
+ from{transform:translate(-50%,-50%) rotateX(72deg) rotateZ(0deg)}
+ to{transform:translate(-50%,-50%) rotateX(72deg) rotateZ(360deg)}
+}
+.orbit .ring-dot{
+ position:absolute;top:0;left:50%;
+ width:10px;height:10px;border-radius:50%;
+ background:var(--accent3);
+ box-shadow:0 0 16px var(--accent3);
+ transform:translate(-50%,-50%);
+}
+
+.hero-sub{
+ margin:32px auto 0;max-width:640px;
+ font-size:clamp(14.5px,2vw,17px);
+ line-height:1.8;color:var(--muted);
+ transform:translateZ(30px);
+ animation:heroIn 1s .5s both;
+}
+.hero-sub b{color:#cfe0ff;font-weight:700}
+.hero-actions{
+ display:flex;gap:14px;justify-content:center;flex-wrap:wrap;
+ margin-top:42px;
+ transform:translateZ(50px);
+ animation:heroIn 1s .65s both;
+}
+.btn{
+ display:inline-flex;align-items:center;gap:10px;
+ padding:15px 32px;border-radius:14px;
+ font-size:13.5px;font-weight:800;letter-spacing:1px;
+ text-decoration:none;cursor:pointer;border:none;
+ text-transform:uppercase;
+ transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s;
+ transform-style:preserve-3d;
+}
+.btn-primary{
+ background:linear-gradient(135deg,var(--accent),var(--accent2));
+ color:#fff;
+ box-shadow:0 12px 34px rgba(110,168,255,.45);
+ position:relative;overflow:hidden;
+}
+.btn-primary::after{
+ content:"";position:absolute;inset:0;
+ background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.3),transparent 70%);
+ transform:translateX(-100%);
+ transition:transform .6s;
+}
+.btn-primary:hover::after{transform:translateX(100%)}
+.btn-primary:hover{transform:translateY(-5px) rotateX(10deg);box-shadow:0 20px 46px rgba(110,168,255,.7)}
+.btn-ghost{
+ background:rgba(255,255,255,.05);
+ border:1px solid rgba(255,255,255,.14);
+ color:#dbe4ff;
+}
+.btn-ghost:hover{transform:translateY(-5px) rotateX(10deg);background:rgba(255,255,255,.1)}
+
+@keyframes heroIn{
+ from{opacity:0;transform:translateY(38px) scale(.94)}
+ to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+.hero-stats{
+ display:grid;grid-template-columns:repeat(3,1fr);
+ gap:18px;width:100%;max-width:680px;
+ margin-top:72px;
+ transform:translateZ(25px);
+ animation:heroIn 1s .8s both;
+}
+.hstat{
+ padding:22px 14px;border-radius:18px;
+ background:rgba(255,255,255,.04);
+ border:1px solid rgba(255,255,255,.08);
+ -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+ transition:.35s;
+ transform-style:preserve-3d;
+}
+.hstat:hover{
+ transform:translateY(-8px) rotateX(6deg);
+ border-color:rgba(110,168,255,.4);
+ background:rgba(110,168,255,.08);
+ box-shadow:0 20px 40px -20px rgba(110,168,255,.5);
+}
+.hstat b{
+ display:block;
+ font-size:clamp(22px,4vw,34px);
+ font-weight:900;
+ background:linear-gradient(135deg,#fff,#8fb6ff);
+ -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hstat span{
+ display:block;margin-top:6px;
+ font-size:10.5px;font-weight:800;letter-spacing:2px;
+ text-transform:uppercase;color:var(--muted);
+}
+
+.scroll-cue{
+ margin-top:60px;display:flex;flex-direction:column;
+ align-items:center;gap:10px;
+ color:var(--muted);font-size:10.5px;
+ letter-spacing:3px;font-weight:800;text-transform:uppercase;
+ animation:heroIn 1s 1s both;
+}
+.scroll-cue .line{
+ width:1px;height:40px;
+ background:linear-gradient(to bottom,rgba(110,168,255,.8),transparent);
+ animation:cueMove 1.8s ease-in-out infinite;
+}
+@keyframes cueMove{0%,100%{transform:translateY(-6px);opacity:.5}50%{transform:translateY(6px);opacity:1}}
+
+/* ================= SECTIONS ================= */
+.section{padding:110px 0;position:relative;z-index:2}
+.sec-head{text-align:center;margin-bottom:64px}
+.sec-kicker{
+ display:inline-block;font-size:11px;font-weight:900;
+ letter-spacing:5px;text-transform:uppercase;
+ color:var(--accent3);margin-bottom:18px;
+}
+.sec-title{
+ font-size:clamp(1.9rem,5.4vw,3.4rem);
+ font-weight:900;letter-spacing:-1px;line-height:1.1;
+ background:linear-gradient(180deg,#fff,#9dc0ff);
+ -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.sec-desc{
+ margin:18px auto 0;max-width:580px;
+ font-size:14.5px;line-height:1.8;color:var(--muted);
+}
+
+/* ================= CARDS ================= */
+.grid{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(310px,1fr));
+ gap:28px;perspective:1600px;
+}
+.card{
+ position:relative;display:block;
+ padding:34px 30px 30px;
+ border-radius:24px;
+ background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.02));
+ border:1px solid rgba(255,255,255,.09);
+ text-decoration:none;color:inherit;cursor:pointer;
+ transform-style:preserve-3d;
+ transition:box-shadow .4s,border-color .4s;
+ overflow:hidden;
+ -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+ will-change:transform;
+}
+.card::before{
+ content:"";position:absolute;inset:0;border-radius:inherit;
+ background:radial-gradient(600px circle at var(--mx,50%) var(--my,50%),
+           rgba(255,255,255,.15),transparent 45%);
+ opacity:0;transition:opacity .4s;pointer-events:none;z-index:1;
+}
+.card:hover::before{opacity:1}
+.card::after{
+ content:"";position:absolute;inset:-1px;border-radius:inherit;
+ padding:1.5px;z-index:0;pointer-events:none;
+ background:linear-gradient(135deg,var(--c1),transparent 45%,var(--c2));
+ -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+ -webkit-mask-composite:xor;mask-composite:exclude;
+ opacity:.4;transition:opacity .4s;
+}
+.card:hover::after{opacity:1}
+.card:hover{
+ box-shadow:0 40px 80px -30px rgba(0,0,0,.9),
+            0 0 60px -20px var(--c1);
+ border-color:transparent;
+}
+.card-inner{position:relative;z-index:2;transform-style:preserve-3d}
+.card-top{
+ display:flex;align-items:flex-start;justify-content:space-between;
+ gap:14px;margin-bottom:22px;
+ transform:translateZ(45px);
+}
+.card-icon{
+ width:62px;height:62px;flex:0 0 auto;
+ display:grid;place-items:center;
+ border-radius:18px;font-size:28px;
+ background:linear-gradient(140deg,var(--c1),var(--c2));
+ box-shadow:0 16px 36px -10px var(--c1),0 0 30px -8px var(--c2);
+ transition:transform .5s cubic-bezier(.2,.8,.2,1);
+}
+.card:hover .card-icon{
+ transform:translateZ(30px) rotateY(-18deg) rotateX(10deg) scale(1.08);
+}
+.card-code{
+ font-size:10.5px;font-weight:900;letter-spacing:2.6px;
+ text-transform:uppercase;
+ padding:7px 14px;border-radius:99px;
+ border:1px solid rgba(255,255,255,.18);
+ background:rgba(255,255,255,.05);
+ color:#c6d4f5;white-space:nowrap;
+}
+.card-subject{
+ margin:0 0 10px;font-size:20px;font-weight:900;
+ line-height:1.35;color:#fff;letter-spacing:-.3px;
+ transform:translateZ(32px);
+}
+.card-topic{
+ margin:0 0 22px;font-size:13.8px;line-height:1.7;
+ color:var(--muted);min-height:50px;
+ transform:translateZ(20px);
+}
+.card-meta{
+ display:flex;align-items:center;justify-content:space-between;
+ gap:12px;padding-top:18px;
+ border-top:1px dashed rgba(255,255,255,.13);
+ transform:translateZ(28px);
+}
+.card-pages{
+ font-size:11.5px;font-weight:800;letter-spacing:1.4px;
+ color:#9db2e0;text-transform:uppercase;
+}
+.card-open{
+ display:inline-flex;align-items:center;gap:8px;
+ font-size:12px;font-weight:900;letter-spacing:1.4px;
+ text-transform:uppercase;color:#fff;
+ transition:gap .3s;
+}
+.card:hover .card-open{gap:14px}
+.card-open .arw{transition:transform .35s}
+.card:hover .card-open .arw{transform:translateX(4px)}
+
+/* ================= ABOUT ================= */
+.about-grid{
+ display:grid;grid-template-columns:1.15fr .85fr;
+ gap:28px;perspective:1400px;
+}
+.panel{
+ padding:38px 34px;border-radius:24px;
+ background:rgba(255,255,255,.04);
+ border:1px solid rgba(255,255,255,.08);
+ -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+ transform-style:preserve-3d;
+ transition:transform .4s;
+}
+.panel:hover{transform:translateY(-6px) rotateX(3deg)}
+.panel h3{
+ margin:0 0 18px;font-size:19px;font-weight:900;
+ letter-spacing:-.2px;color:#fff;
+ display:flex;align-items:center;gap:12px;
+}
+.panel h3::before{
+ content:"";width:4px;height:22px;border-radius:4px;
+ background:linear-gradient(180deg,var(--accent),var(--accent2));
+ box-shadow:0 0 16px var(--accent);
+}
+.panel p{
+ margin:0 0 14px;font-size:14.5px;line-height:1.9;color:var(--muted);
+}
+.panel p:last-child{margin-bottom:0}
+.panel b{color:#cfe0ff;font-weight:700}
+.info-list{list-style:none}
+.info-list li{
+ display:flex;justify-content:space-between;gap:14px;
+ padding:14px 0;
+ border-bottom:1px dashed rgba(255,255,255,.1);
+ font-size:14px;
+ transition:.25s;
+}
+.info-list li:hover{padding-left:8px;color:#fff}
+.info-list li:last-child{border-bottom:none}
+.info-list span:first-child{color:var(--muted);font-weight:600;letter-spacing:.3px}
+.info-list span:last-child{color:#fff;font-weight:800;text-align:right}
+
+/* ================= FOOTER ================= */
+.footer{
+ position:relative;z-index:2;
+ padding:80px 28px 50px;text-align:center;
+ border-top:1px solid rgba(255,255,255,.06);
+ background:linear-gradient(180deg,transparent,rgba(110,168,255,.05));
+}
+.footer-name{
+ font-size:clamp(2rem,7vw,4rem);
+ font-weight:900;letter-spacing:8px;
+ line-height:1;
+ background:linear-gradient(120deg,#fff 20%,#9dc0ff 55%,#c084fc 90%);
+ -webkit-background-clip:text;background-clip:text;color:transparent;
+ filter:drop-shadow(0 0 40px rgba(110,168,255,.4));
+ margin-bottom:22px;
+ animation:footerFloat 5s ease-in-out infinite;
+}
+@keyframes footerFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.footer p{font-size:13px;color:var(--muted);line-height:1.9;margin:0 0 6px}
+.footer .tiny{
+ margin-top:32px;font-size:10.5px;letter-spacing:3px;
+ text-transform:uppercase;color:rgba(139,150,184,.6);
+}
+
+/* ================= VIEWER ================= */
+.viewer{
+ position:fixed;inset:0;z-index:900;
+ background:#05070f;
+ display:none;flex-direction:column;
+ opacity:0;transition:opacity .4s;
+}
+.viewer.open{display:flex;opacity:1}
+.vbar{
+ flex:0 0 auto;display:flex;flex-wrap:wrap;gap:8px;
+ align-items:center;justify-content:center;
+ padding:12px 16px;
+ background:rgba(10,13,24,.95);
+ -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+ border-bottom:1px solid rgba(255,255,255,.08);
+}
+.vbar button{
+ font:800 12px/1 'Segoe UI',system-ui,sans-serif;
+ letter-spacing:1px;text-transform:uppercase;
+ color:#e8eaf0;background:rgba(255,255,255,.06);
+ border:1px solid rgba(255,255,255,.12);
+ border-radius:10px;padding:10px 14px;cursor:pointer;
+ white-space:nowrap;transition:.2s;
+}
+.vbar button:hover{
+ background:rgba(110,168,255,.15);
+ border-color:rgba(110,168,255,.5);
+ color:#fff;
+ transform:translateY(-1px);
+}
+.vbar button:active{transform:translateY(0)}
+.vbar button.primary{
+ background:linear-gradient(135deg,var(--accent),var(--accent2));
+ border-color:transparent;color:#fff;
+ box-shadow:0 8px 20px -6px rgba(110,168,255,.6);
+}
+.vbar button.primary:hover{box-shadow:0 12px 28px -6px rgba(110,168,255,.8)}
+.vbar .vind{
+ color:#c8cddb;font:800 12px/1 system-ui,sans-serif;
+ letter-spacing:1px;padding:0 10px;min-width:70px;text-align:center;
+}
+.vbar .vtitle{
+ color:#fff;font:800 12.5px/1 system-ui,sans-serif;
+ letter-spacing:1.4px;text-transform:uppercase;
+ padding:0 12px;max-width:38%;
+ overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.vstage{
+ flex:1;overflow:auto;-webkit-overflow-scrolling:touch;
+ background:
+  radial-gradient(circle at 50% 0%,rgba(110,168,255,.08),transparent 60%),
+  #05070f;
+ padding:30px 12px 80px;
+}
+.vpages{
+ display:flex;flex-direction:column;align-items:center;gap:28px;
+ transform-origin:top center;
+}
+
+/* ================= NOTEBOOK PAGE ================= */
+.page{
+ position:relative;width:210mm;height:297mm;flex:0 0 auto;
+ background-color:var(--paper);
+ background-image:repeating-linear-gradient(to bottom,
+  rgba(255,255,255,0) 0px,rgba(255,255,255,0) 31px,
+  var(--rule) 31px,var(--rule) 32px);
+ background-position:0 81px;
+ box-shadow:
+  0 22px 60px rgba(0,0,0,.7),
+  0 6px 16px rgba(0,0,0,.5),
+  inset 0 0 60px rgba(190,170,120,.10);
+ overflow:hidden;
+}
+.page::after{
+ content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+ background-image:
+  radial-gradient(rgba(140,118,72,.055) 1px,transparent 1px),
+  radial-gradient(rgba(140,118,72,.04) 1px,transparent 1px);
+ background-size:6px 6px,11px 11px;
+ background-position:0 0,3px 5px;opacity:.85;
+}
+.margin-line{
+ position:absolute;top:0;bottom:0;left:67px;width:2px;
+ background:var(--margin-line);opacity:.9;z-index:1;
+}
+.margin-line::after{
+ content:"";position:absolute;left:5px;top:0;bottom:0;
+ width:1px;background:var(--margin-line);opacity:.55;
+}
+.page-body{
+ position:relative;z-index:2;height:100%;
+ padding:var(--pad-top) 38px 56px 88px;
+ font-family:var(--hand);font-size:17.5px;line-height:var(--lh);
+ color:var(--ink);letter-spacing:.1px;
+ text-shadow:0 0 .55px rgba(20,50,120,.45);
+ overflow:hidden;
+}
+.page-body h2{
+ margin:0 0 32px;font-size:21.5px;line-height:32px;
+ font-weight:700;color:var(--ink-red);letter-spacing:1.1px;
+ text-transform:uppercase;text-decoration:underline;
+ text-decoration-thickness:1.6px;text-underline-offset:6px;
+ transform:rotate(-.3deg);transform-origin:left center;
+ text-shadow:0 0 .7px rgba(150,30,30,.45);
+}
+.page-body h2.center{text-align:center;transform:rotate(-.2deg);transform-origin:center}
+.page-body h3{
+ margin:0 0 32px;font-size:18.5px;line-height:32px;
+ font-weight:700;color:var(--ink-dark-red);letter-spacing:.55px;
+ text-shadow:0 0 .6px rgba(150,30,30,.35);
+}
+.page-body p{margin:0 0 32px}
+.page-body p:last-child{margin-bottom:0}
+.page-body b{font-weight:700;color:#12306e}
+.page-body ul{margin:0 0 32px;padding-left:26px}
+.page-body li{margin:0}
+.u-green{
+ text-decoration:underline;
+ text-decoration-color:var(--ink-green);
+ text-decoration-thickness:1.5px;text-underline-offset:4px;
+}
+.diagram{
+ margin:0 0 32px;text-align:center;
+ font-weight:700;color:#12306e;line-height:1.6;
+}
+.diagram .arrow{
+ color:#b02828;font-size:20px;display:block;margin:4px 0;
+}
+.pg-num{
+ position:absolute;right:44px;bottom:28px;z-index:3;
+ font-family:var(--hand);font-size:16px;
+ color:var(--ink);opacity:.85;
+}
+.page.cover{background-image:none}
+.page.cover .margin-line{display:none}
+.cover-frame{
+ position:absolute;inset:14mm 13mm;
+ border:2.5px solid rgba(27,63,143,.75);border-radius:12px;
+ z-index:2;padding:11mm 9mm;
+ display:flex;flex-direction:column;align-items:center;
+ font-family:var(--hand);color:var(--ink);
+ text-shadow:0 0 .6px rgba(20,50,120,.4);
+}
+.cover-frame::before{
+ content:"";position:absolute;inset:5px;
+ border:1px solid rgba(176,40,40,.6);border-radius:8px;
+ pointer-events:none;
+}
+.cv-college{
+ font-size:26px;line-height:1.25;color:var(--ink-red);
+ font-weight:700;letter-spacing:2px;text-align:center;
+}
+.cv-sub{
+ font-size:17px;margin-top:8px;text-align:center;
+ color:var(--ink-red);letter-spacing:1.2px;font-weight:700;
+}
+.cv-rule{
+ width:72%;height:0;border-top:2px dashed rgba(27,63,143,.5);
+ margin:20px 0 18px;
+}
+.cv-session{
+ font-size:16.5px;letter-spacing:.8px;text-align:center;color:#1b3f8f;
+}
+.cv-gap{height:26px}
+.cv-assign{
+ font-size:30px;font-weight:700;letter-spacing:5px;
+ color:#12306e;margin:6px 0 14px;
+}
+.cv-paper{font-size:17px;letter-spacing:1px;color:#12306e}
+.cv-subject{
+ font-size:22px;font-weight:700;letter-spacing:2px;
+ color:var(--ink-red);margin-top:10px;text-align:center;
+}
+.cv-topic{
+ font-size:17px;font-weight:700;letter-spacing:1px;
+ color:#12306e;margin-top:16px;text-align:center;
+ border-bottom:1.5px solid rgba(27,63,143,.55);
+ border-top:1.5px solid rgba(27,63,143,.55);
+ padding:7px 10px;transform:rotate(-.3deg);
+}
+.cv-info{
+ width:82%;margin-top:auto;margin-bottom:6px;
+ font-size:17px;line-height:32px;
+}
+.cvi-title{color:var(--ink-red);font-weight:700;letter-spacing:.8px}
+.cvi-name{
+ font-size:21px;font-weight:700;letter-spacing:2.5px;
+ color:#12306e;margin:4px 0 12px 14px;
+}
+.cvi-row{
+ display:flex;justify-content:space-between;gap:12px;
+ border-bottom:1px dotted rgba(27,63,143,.35);
+ padding-bottom:2px;
+}
+.cvi-row span:first-child{color:#2a4a8f}
+table.idx{
+ width:100%;border-collapse:collapse;
+ font-family:var(--hand);font-size:16.5px;line-height:24px;
+ color:var(--ink);
+}
+table.idx th{
+ border:1.6px solid rgba(27,63,143,.75);
+ padding:5px 9px;text-align:left;color:var(--ink-red);
+ font-weight:700;letter-spacing:.8px;
+ background:rgba(178,208,244,.22);
+}
+table.idx td{border:1px solid rgba(27,63,143,.55);padding:5px 9px}
+table.idx td.c1{width:13%;text-align:center}
+table.idx td.c3{width:17%;text-align:center}
+table.comp{
+ width:100%;border-collapse:collapse;
+ font-family:var(--hand);font-size:14px;line-height:22px;
+ color:var(--ink);
+}
+table.comp th{
+ border:1.5px solid rgba(27,63,143,.75);
+ padding:4px 6px;text-align:left;color:var(--ink-red);
+ background:rgba(178,208,244,.22);font-weight:700;
+}
+table.comp td{
+ border:1px solid rgba(27,63,143,.55);
+ padding:4px 6px;vertical-align:top;
+}
+
+/* ================= REVEAL ================= */
+.reveal{
+ opacity:0;transform:translateY(46px) scale(.96);
+ transition:opacity 1s cubic-bezier(.2,.8,.2,1),
+            transform 1s cubic-bezier(.2,.8,.2,1);
+}
+.reveal.in{opacity:1;transform:none}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width:900px){
+ .about-grid{grid-template-columns:1fr}
+}
+@media (max-width:760px){
+ .nav{padding:12px 20px}
+ .nav.scrolled{padding:10px 20px}
+ .burger{display:block}
+ .nav-links{
+  position:absolute;top:100%;left:0;right:0;
+  flex-direction:column;align-items:stretch;gap:4px;
+  padding:14px 20px 22px;
+  background:rgba(5,6,12,.97);
+  -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,.08);
+  transform-origin:top;
+  transform:scaleY(0);opacity:0;pointer-events:none;
+  transition:transform .3s,opacity .3s;
+ }
+ .nav-links.open{transform:scaleY(1);opacity:1;pointer-events:auto}
+ .nav-links a{padding:14px 16px;font-size:14px}
+ .wrap{padding:0 20px}
+ .hero{padding:120px 0 70px}
+ .hero-stats{grid-template-columns:repeat(3,1fr);gap:10px;margin-top:54px}
+ .hstat{padding:16px 8px}
+ .section{padding:80px 0}
+ .grid-floor{opacity:.35}
+ .vbar button{padding:8px 10px;font-size:10.5px}
+ .vbar .vtitle{display:none}
+ .vbar .vind{min-width:56px;font-size:11px}
+}
+@media (max-width:420px){
+ .hero-actions{flex-direction:column;width:100%}
+ .btn{justify-content:center;width:100%}
+ .hero-stats{grid-template-columns:1fr;gap:10px}
+}
+@media (prefers-reduced-motion:reduce){
+ *,*::before,*::after{
+  animation-duration:.001ms !important;
+  animation-iteration-count:1 !important;
+  transition-duration:.001ms !important;
+ }
+ .reveal{opacity:1;transform:none}
+}
+</style>
+</head>
+
+<body>
+
+<!-- BACKDROP -->
+<div class="bg"></div>
+<div class="stars"></div>
+<div class="grid-floor"></div>
+<div class="particles" id="particles"></div>
+
+<!-- NAV -->
+<header class="nav" id="nav">
+  <a class="brand" href="#top">
+    <span class="brand-dot"></span>
+    <b>AMIL</b>
+  </a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#top">Home</a></li>
+    <li><a href="#work">Work</a></li>
+    <li><a href="#about">About</a></li>
+  </ul>
+  <button class="burger" id="burger" aria-label="Menu"><i></i><i></i><i></i></button>
+</header>
+
+<main id="top">
+
+<!-- HERO -->
+<section class="hero wrap">
+  <div class="hero-badge"><span class="b-dot"></span> B.Com Semester III · 2025–29</div>
+
+  <div class="hero-name-wrap">
+    <div class="orbit"><span class="ring-dot"></span></div>
+    <div class="orbit o2"><span class="ring-dot"></span></div>
+    <h1 class="hero-name" data-text="AMIL" id="heroName"><span>AMIL</span></h1>
+  </div>
+
+  <p class="hero-sub">
+    A collection of six handwritten-style assignments — crafted with care,
+    presented in <b>3D space</b>. Every page, every diagram, every detail —
+    all in one place.
+  </p>
+
+  <div class="hero-actions">
+    <a class="btn btn-primary" href="#work">Explore Work →</a>
+    <a class="btn btn-ghost" href="#about">About</a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="hstat"><b>6</b><span>Subjects</span></div>
+    <div class="hstat"><b>112</b><span>Pages</span></div>
+    <div class="hstat"><b>III</b><span>Semester</span></div>
+  </div>
+
+  <div class="scroll-cue"><span>Scroll</span><span class="line"></span></div>
+</section>
+
+<!-- WORK -->
+<section class="section wrap" id="work">
+  <div class="sec-head reveal">
+    <span class="sec-kicker">Portfolio</span>
+    <h2 class="sec-title">Semester III Work</h2>
+    <p class="sec-desc">Click any card to open the full digital notebook.</p>
+  </div>
+  <div class="grid" id="cardGrid"></div>
+</section>
+
+<!-- ABOUT -->
+<section class="section wrap" id="about">
+  <div class="sec-head reveal">
+    <span class="sec-kicker">About</span>
+    <h2 class="sec-title">The Project</h2>
+  </div>
+  <div class="about-grid">
+    <div class="panel reveal">
+      <h3>📘 A Digital Notebook</h3>
+      <p>This is a complete <b>B.Com Semester III</b> assignment collection — each document prepared as a full notebook with cover, acknowledgement, index, detailed content and bibliography.</p>
+      <p>Every page has been hand-formatted with ruled paper texture, margin lines, handwritten-style typography and hand-drawn diagrams — designed to feel like a real notebook brought to life on screen.</p>
+      <p>Six subjects — Indian Economy, Disaster Risk Management, Communication in Professional Life, Business Law, Business Mathematics &amp; Statistics, and Sales &amp; Distribution Management.</p>
+    </div>
+    <div class="panel reveal">
+      <h3>👤 Student</h3>
+      <ul class="info-list">
+        <li><span>Name</span><span>Amil Arfat</span></li>
+        <li><span>Course</span><span>B.Com</span></li>
+        <li><span>Semester</span><span>III</span></li>
+        <li><span>Faculty</span><span>Commerce</span></li>
+        <li><span>Roll No.</span><span>418</span></li>
+        <li><span>University Roll</span><span>252021010402</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  <div class="footer-name">AMIL</div>
+  <p>B.Com · Semester III · Commerce</p>
+  <p>C. M. College (Arts &amp; Commerce), Darbhanga</p>
+  <p class="tiny">© <span id="year"></span> Amil Arfat</p>
+</footer>
+
+<!-- VIEWER -->
+<div class="viewer" id="viewer">
+  <div class="vbar">
+    <button id="vBack" class="primary">← Back</button>
+    <button id="vPrev">◀ Prev</button>
+    <span class="vind" id="vInd">1 / 1</span>
+    <button id="vNext">Next ▶</button>
+    <span class="vtitle" id="vTitle"></span>
+    <button id="vZoomOut">−</button>
+    <span class="vind" id="vZoomVal">100%</span>
+    <button id="vZoomIn">+</button>
+    <button id="vFit">Fit</button>
+  </div>
+  <div class="vstage" id="vStage">
+    <div class="vpages" id="vPages"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============ DATA ============ */
+var DATA = [
+{ c:'IDC-3', s:'Indian Economy', t:'Main Features of Indian Economy',
+  c1:'#4f8cff', c2:'#a855f7', ic:'💰',
+  ix:[['Introduction','4'],['Meaning of Indian Economy','5'],['Mixed Economy','5'],['Large Population','6'],['Large Labour Force','6'],['Importance of Agriculture','7'],['Growing Service Sector','8'],['Industrial Development','9'],['Regional Diversity','10'],['Income and Wealth Inequality','11'],['Employment Challenges','12'],['Infrastructure Development','13'],['Economic Reforms','14'],['Global Integration','15'],['Demographic Opportunity','16'],['Poverty Reduction and Welfare','17'],['Major Challenges','18'],['Conclusion','19'],['Bibliography','20']],
+  pg:[
+   '<h2>1. Introduction</h2><p>An economy refers to the system by which a country organises the production, distribution, and consumption of goods and services. The Indian economy is one of the largest and fastest-growing economies in the world.</p><p>It is a developing economy that has undergone significant changes since independence. Today, India is a major player in the global economy, with a diverse structure that includes agriculture, industry, and services.</p><p>India is known for its vast diversity. The economic structure varies greatly from region to region. Some states are highly industrialised, while others depend mainly on agriculture. This diversity is one of the most important features of the Indian economy.</p><p>The Indian economy has shown remarkable resilience and growth over the years. It has a large consumer market, a young population, and a growing services sector. At the same time, it faces challenges such as unemployment, inequality, and the need for infrastructure development.</p>',
+   '<h3>2. Meaning of Indian Economy</h3><p>The Indian economy refers to the economic system of India, which is characterized by a mix of public and private enterprises. It is a developing economy that aims to achieve sustainable growth and improve the standard of living of its people.</p><h3 style="margin-top:32px;">3. Mixed Economy</h3><p>India follows a mixed economic system. This means that both the government (public sector) and private businesses (private sector) play an important role in the economy.</p><p><b>Public Sector :</b> The government owns and manages key industries such as railways, defence, and public utilities.</p><p><b>Private Sector :</b> Private individuals and companies own and manage businesses in sectors like trade, manufacturing, and services.</p><p><b>Role of Government :</b> The government regulates the economy, provides public goods, and ensures social welfare.</p><div class="diagram">INDIAN ECONOMY<br><span class="arrow">↓</span>PUBLIC SECTOR + PRIVATE SECTOR<br><span class="arrow">↓</span>ECONOMIC DEVELOPMENT</div>',
+   '<h3>4. Large Population</h3><p>India is the second-most populous country in the world. A large population provides a huge consumer market for goods and services.</p><p>It creates demand for food, clothing, housing, and other products. However, it also puts pressure on resources, infrastructure, and public services.</p><h3 style="margin-top:32px;">5. Large Labour Force</h3><p>India has a large working-age population. This provides a vast labour force for agriculture, industry, and services.</p><p>The availability of labour is an advantage for businesses. However, providing employment to such a large population is a major challenge.</p><p>Skill development and education are essential to improve labour productivity and employability.</p>',
+   '<h3>6. Importance of Agriculture</h3><p>Agriculture is the backbone of the Indian economy. It provides employment to a large section of the population and ensures food security for the country.</p><p>It also supplies raw materials to industries such as textiles, sugar, and food processing. The rural economy is closely linked to agricultural activities.</p><p>Despite its importance, agriculture faces challenges such as low productivity, dependence on monsoons, and small landholdings.</p><div class="diagram">AGRICULTURE<br><span class="arrow">↓</span>FOOD + EMPLOYMENT + RAW MATERIAL<br><span class="arrow">↓</span>ECONOMIC DEVELOPMENT</div>',
+   '<h3>7. Growing Service Sector</h3><p>The service sector has emerged as the largest contributor to India\'s GDP. It includes a wide range of activities such as information technology, banking, insurance, transport, and communication.</p><p>Other important services include education, healthcare, tourism, trade, and financial services.</p><p>The growth of the service sector has been driven by technology, globalisation, and the rise of the knowledge economy.</p><p>Services are important because they generate employment, earn foreign exchange, and support other sectors of the economy.</p>',
+   '<h3>8. Industrial Development</h3><p>India has a well-developed industrial base. Major industries include manufacturing, automobiles, textiles, pharmaceuticals, steel, chemicals, engineering, and food processing.</p><p>The industrial sector is important for employment generation, production, and exports. It also supports infrastructure development and economic growth.</p><p>Industrial development has been supported by government policies such as Make in India and the development of industrial corridors.</p><p>However, the sector still faces challenges such as inadequate infrastructure, regulatory hurdles, and the need for technological upgradation.</p>',
+   '<h3>9. Regional Diversity</h3><p>India is a land of diverse regions. Economic development varies significantly from one state to another. Some states are highly developed, while others are still developing.</p><p>This diversity is due to factors such as natural resources, infrastructure, education, investment, urbanisation, human capital, and geographical conditions.</p><p>For example, states with better infrastructure and educational facilities have attracted more investment and achieved higher growth rates.</p><p>Regional diversity is a challenge as well as an opportunity. Balanced regional development is essential for inclusive growth.</p>',
+   '<h3>10. Income and Wealth Inequality</h3><p>Income and wealth inequality is a major feature of the Indian economy. There are significant differences in income levels between different sections of society.</p><p>There are also rural-urban differences and regional differences in income and wealth. Some households have access to better opportunities, while others struggle to meet their basic needs.</p><p>Inequality can hinder economic growth and social stability. It is important to provide equal opportunities in education, healthcare, and employment.</p><p>Government policies and welfare schemes aim to reduce inequality and promote inclusive growth.</p>',
+   '<h3>11. Employment Challenges</h3><p>Employment generation is one of the biggest challenges facing the Indian economy. The problem is not just unemployment but also underemployment and informal employment.</p><p>Youth employment is a major concern. Many young people do not have the skills required by the job market.</p><p>There is a need for skill development, vocational training, and productive investment to create more jobs.</p><p>The government has launched various schemes to promote employment and entrepreneurship, but the challenge remains significant.</p>',
+   '<h3>12. Infrastructure Development</h3><p>Infrastructure is the backbone of any economy. India has made significant progress in developing roads, railways, ports, airports, electricity, and telecommunications.</p><p>Internet connectivity has improved dramatically, supporting digital India and e-commerce.</p><p>Urban infrastructure such as housing, water supply, and sanitation is also being developed.</p><div class="diagram">INFRASTRUCTURE<br><span class="arrow">↓</span>CONNECTIVITY<br><span class="arrow">↓</span>LOWER COST<br><span class="arrow">↓</span>MORE BUSINESS ACTIVITY<br><span class="arrow">↓</span>ECONOMIC GROWTH</div>',
+   '<h3>13. Economic Reforms</h3><p>Since 1991, India has undertaken significant economic reforms. These reforms have changed the direction of the Indian economy.</p><p>The main features of these reforms are liberalisation, privatisation, and globalisation. They have increased the role of markets and reduced government control.</p><p>Reforms have led to greater investment, competition, and technology adoption. They have also integrated India with the global economy.</p><p>However, the benefits of reforms have not reached all sections of society equally. There is a need for inclusive and sustainable development.</p>',
+   '<h3>14. Global Integration</h3><p>The Indian economy is increasingly integrated with the global economy. International trade, foreign investment, and technology flows have increased significantly.</p><p>India is a major exporter of services, especially IT services. It also imports goods and services from other countries.</p><p>Global integration provides opportunities for growth, technology transfer, and access to global markets.</p><p>At the same time, it poses challenges such as competition, external shocks, and the need to remain competitive in the global market.</p>',
+   '<h3>15. Demographic Opportunity</h3><p>India has a young population, which is a major advantage. The working-age population is large, and this can boost economic growth if properly utilised.</p><p>However, the demographic advantage depends on education, health, and productive employment. If young people do not have the right skills, the advantage can turn into a challenge.</p><p>Investing in education, healthcare, and skill development is essential to harness the demographic dividend.</p><p>Productivity and innovation are key to transforming the demographic opportunity into economic prosperity.</p>',
+   '<h3>16. Poverty Reduction and Welfare</h3><p>Poverty reduction has been a major objective of India\'s economic policy. Over the years, there has been a significant decline in poverty levels.</p><p>Access to education, healthcare, and food security has improved. Social welfare schemes and financial inclusion have helped improve the standard of living of many people.</p><p>Government programmes aim to provide basic amenities, employment, and social security to vulnerable sections of society.</p><p>However, poverty and deprivation still exist, and sustained efforts are needed to ensure inclusive growth.</p>',
+   '<h2>17. Major Challenges of Indian Economy</h2><p>Despite significant progress, the Indian economy faces several challenges.</p><p><b>1. Employment Generation :</b> Creating enough jobs for the growing labour force.</p><p><b>2. Income Inequality :</b> Reducing the gap between rich and poor.</p><p><b>3. Regional Imbalance :</b> Ensuring balanced development across all regions.</p><p><b>4. Infrastructure Gaps :</b> Improving infrastructure to support economic growth.</p><p><b>5. Human Development :</b> Improving education, health, and living standards.</p><p><b>6. Agricultural Challenges :</b> Increasing productivity and reducing dependence on monsoons.</p><p><b>7. Skill Development :</b> Equipping the workforce with relevant skills.</p><p><b>8. Environmental Sustainability :</b> Balancing growth with environmental protection.</p><p><b>9. Balanced Economic Growth :</b> Ensuring growth in all sectors and regions.</p>',
+   '<h2>Conclusion</h2><p>The Indian economy is a mixed economy with a diverse structure. It has a large population, a growing labour force, and a significant agricultural base. The service sector has emerged as the largest contributor to GDP, and industrial development has been substantial.</p><p>Economic reforms since 1991 have integrated India with the global economy and increased the role of markets. The large market and demographic opportunity provide a strong foundation for future growth.</p><p>However, the economy faces challenges such as unemployment, income inequality, regional imbalance, and infrastructure gaps. Addressing these challenges is essential for sustainable and inclusive development.</p><p>In conclusion, the Indian economy has immense potential. With the right policies, investment in human capital, and a focus on innovation, India can achieve its goal of becoming a leading global economic power.</p>'
+  ],
+  bib:['Indian Economy — B.Com Reference Textbook.','Indian Economy — Classroom Study Material, Department of Commerce.','B.Com. Semester III classroom notes and study material, C. M. College (Arts & Commerce), Darbhanga.','Previous years\' university question papers and syllabus of Indian Economy (IDC-3).']
+},
+{ c:'AEC-3', s:'Disaster Risk Management', t:'Importance of the Study of Disaster Risk Management',
+  c1:'#f97316', c2:'#ef4444', ic:'⚠️',
+  ix:[['Introduction','4'],['Meaning of Disaster','5'],['Meaning of Disaster Risk','6'],['Meaning of Disaster Risk Management','7'],['Types of Disasters','8'],['Importance of Disaster Risk Management','9'],['Protection of Human Life','10'],['Reduction of Economic Loss','11'],['Community Preparedness','12'],['Early Warning and Early Action','13'],['Protection of Infrastructure','14'],['Environmental Protection','15'],['Coordination Among Agencies','16'],['Faster Recovery','17'],['Education and Awareness','18'],['Climate and Emerging Risks','19'],['Role of Students and Communities','20'],['Conclusion','21'],['Bibliography','22']],
+  pg:[
+   '<h2>1. Introduction</h2><p>A disaster is a sudden and unfortunate event that causes widespread damage, loss of life, and disruption of normal life. Disasters can be natural or human-induced. They affect individuals, families, communities, and entire nations.</p><p>India is highly vulnerable to disasters. Floods, earthquakes, cyclones, droughts, landslides, and fires occur frequently in different parts of the country. The impact of these disasters on life, property, and the economy is very severe.</p><p>Disaster Risk Management is the systematic process of planning and implementing measures to reduce the risk and impact of disasters. It includes prevention, mitigation, preparedness, response, and recovery.</p><p>The study of Disaster Risk Management is very important for every citizen, especially for students of commerce. It helps in understanding how disasters affect the economy, businesses, and society, and how their impact can be reduced through proper planning and preparedness.</p>',
+   '<h2>2. Meaning of Disaster</h2><p>A disaster is a serious disruption of the functioning of a community or society, causing widespread human, material, economic, or environmental losses that exceed the ability of the affected community to cope using its own resources.</p><p>In simple words, a disaster is a sudden harmful event that causes:</p><p><b>1. Loss of Life :</b> Death and injury to people.</p><p><b>2. Damage to Property :</b> Destruction of houses, buildings, and infrastructure.</p><p><b>3. Disruption of Normal Life :</b> Interruption of daily activities, education, and business.</p><p><b>4. Economic and Environmental Impact :</b> Loss of livelihood, damage to crops, forests, and water resources.</p><p><span class="u-green">Examples :</span> Flood, earthquake, cyclone, drought, fire, industrial accident.</p>',
+   '<h2>3. Meaning of Disaster Risk</h2><p>Disaster risk is the potential loss of life, injury, or destroyed assets which could occur to a system, society, or community in a specific period of time.</p><p>It is determined by the combination of hazard, exposure, vulnerability, and capacity.</p><p><b>Hazard :</b> A dangerous phenomenon or event that may cause harm.</p><p><b>Exposure :</b> The people, property, or systems that may be affected by the hazard.</p><p><b>Vulnerability :</b> The conditions that increase the likelihood of being affected by a hazard.</p><p><b>Capacity :</b> The resources and abilities available to reduce or cope with the risk.</p><div class="diagram">HAZARD<br><span class="arrow">+</span>EXPOSURE<br><span class="arrow">+</span>VULNERABILITY<br><span class="arrow">↓</span>DISASTER RISK</div>',
+   '<h2>4. Meaning of Disaster Risk Management</h2><p>Disaster Risk Management (DRM) is the systematic process of planning, organising, and implementing measures to reduce the risk and impact of disasters.</p><p>It aims to protect people, property, and the environment from the harmful effects of disasters. The main components of DRM are:</p><div class="diagram">PREVENTION<br><span class="arrow">↓</span>PREPAREDNESS<br><span class="arrow">↓</span>RESPONSE<br><span class="arrow">↓</span>RECOVERY<br><span class="arrow">↓</span>RISK REDUCTION</div><p>This cycle is continuous. Each stage helps reduce the impact of future disasters and strengthens the resilience of the community.</p>',
+   '<h2>5. Types of Disasters</h2><h3>A. Natural Disasters</h3><p><b>Earthquake :</b> Sudden shaking of the ground causing collapse of buildings and loss of life.</p><p><b>Flood :</b> Overflow of water causing drowning, displacement, and damage to crops.</p><p><b>Cyclone :</b> Violent storm with strong winds and heavy rain causing destruction along coastal areas.</p><p><b>Drought :</b> Prolonged shortage of water causing crop failure and food scarcity.</p><p><b>Landslide :</b> Movement of rock and soil down a slope causing damage to life and property.</p><h3 style="margin-top:32px;">B. Human-Induced Disasters</h3><p><b>Industrial Accidents :</b> Explosions or fires in factories.</p><p><b>Chemical Accidents :</b> Leakage of toxic chemicals harming health and environment.</p><p><b>Major Fires :</b> Destruction of buildings and loss of life.</p><p><b>Transport Accidents :</b> Road, rail, and air accidents.</p>',
+   '<h2>6. Importance of Disaster Risk Management</h2><p>Disaster Risk Management is very important for the safety, stability, and development of any society. Its main importance is explained below.</p><p><b>1. Saving Lives :</b> Preparedness and early warning can save many lives during a disaster.</p><p><b>2. Reducing Damage :</b> Mitigation measures reduce the damage to property and infrastructure.</p><p><b>3. Better Emergency Response :</b> Planning helps in quick and organised response during emergencies.</p><p><b>4. Protection of Livelihoods :</b> It helps protect jobs, businesses, and agricultural activities.</p><p><b>5. Community Resilience :</b> It builds the ability of communities to cope with disasters.</p><p><b>6. Faster Recovery :</b> Pre-planned recovery efforts help in restoring normal life quickly.</p>',
+   '<h2>7. Protection of Human Life</h2><p>The most important objective of disaster risk management is protecting human life. This can be achieved through:</p><p><b>Early Warning :</b> Issuing alerts before a disaster strikes so people can move to safety.</p><p><b>Evacuation :</b> Moving people from high-risk areas to safe locations.</p><p><b>Emergency Shelters :</b> Providing safe places for people to stay during and after a disaster.</p><p><b>First Aid :</b> Providing immediate medical help to injured people.</p><p><b>Emergency Training :</b> Training people in basic emergency procedures.</p><p><b>Disaster Drills :</b> Regular practice to prepare people for emergency situations.</p><p>Proper preparation can significantly reduce deaths and injuries during disasters.</p>',
+   '<h2>8. Reduction of Economic Loss</h2><p>Disasters cause huge economic losses. They damage:</p><p><b>Houses :</b> Destruction of homes leads to displacement and loss of assets.</p><p><b>Shops and Factories :</b> Damage to businesses leads to loss of income and jobs.</p><p><b>Crops :</b> Damage to agriculture affects farmers and food supply.</p><p><b>Roads and Bridges :</b> Damage to transport infrastructure disrupts trade and movement.</p><p><b>Electricity :</b> Power failure halts industry and daily life.</p><p><b>Communication Systems :</b> Breakdown of communication hinders rescue and relief operations.</p><p>Mitigation and preparedness measures help reduce these losses and speed up recovery.</p>',
+   '<h2>9. Community Preparedness</h2><p>Community preparedness is the backbone of disaster risk management. It involves preparing the local community to respond effectively during emergencies.</p><p><b>Awareness Programmes :</b> Educating people about hazards and safety measures.</p><p><b>Mock Drills :</b> Practising emergency procedures.</p><p><b>Emergency Plans :</b> Preparing clear action plans for different disaster situations.</p><p><b>Local Volunteers :</b> Training volunteers to help during emergencies.</p><p><b>First-Aid Training :</b> Teaching basic first-aid skills.</p><p><b>Emergency Communication :</b> Establishing reliable means of communication.</p><p><b>Evacuation Routes :</b> Identifying safe routes for evacuation.</p><div class="diagram">AWARENESS<br><span class="arrow">↓</span>TRAINING<br><span class="arrow">↓</span>PREPAREDNESS<br><span class="arrow">↓</span>QUICK RESPONSE</div>',
+   '<h2>10. Early Warning and Early Action</h2><p>Early warning systems are an important part of disaster risk management. They provide timely information about an approaching hazard so that people can take protective action.</p><p><b>Warning Systems :</b> Use of technology to detect and monitor hazards such as cyclones, floods, and earthquakes.</p><p><b>Communication of Warnings :</b> Reaching people through radio, TV, mobile phones, sirens, and public announcements.</p><p><b>Evacuation :</b> Moving people to safe areas before the disaster strikes.</p><p><b>Protection of Property :</b> Moving valuables and livestock to safe places.</p><p><b>Role of Authorities :</b> Issuing warnings and coordinating response actions.</p><p><b>Role of Communities :</b> Responding promptly to warnings and following instructions.</p><p>Early action saves lives and reduces losses significantly.</p>',
+   '<h2>11. Protection of Infrastructure</h2><p>Infrastructure is essential for the functioning of society. Disasters can destroy critical infrastructure and disrupt essential services.</p><p>Protection should be given to:</p><p><b>Schools :</b> Safe buildings and disaster preparedness training for students.</p><p><b>Hospitals :</b> Strengthening buildings and ensuring emergency medical services.</p><p><b>Roads and Bridges :</b> Building resilient transport networks.</p><p><b>Electricity :</b> Protecting power supply systems.</p><p><b>Water Supply :</b> Ensuring safe and continuous water supply.</p><p><b>Communication Networks :</b> Maintaining reliable communication during emergencies.</p><p>Disaster-resilient construction and proper planning are essential for protecting infrastructure.</p>',
+   '<h2>12. Environmental Protection</h2><p>The environment plays an important role in reducing disaster risk. Healthy ecosystems act as natural buffers against many hazards.</p><p><b>Forests :</b> Prevent soil erosion and reduce the impact of floods and landslides.</p><p><b>Wetlands :</b> Absorb excess water and reduce flood risk.</p><p><b>Rivers :</b> Proper management of rivers prevents flooding.</p><p><b>Soil :</b> Conservation of soil reduces the risk of landslides and erosion.</p><p><b>Biodiversity :</b> Healthy ecosystems are more resilient to environmental changes.</p><p><b>Sustainable Land Use :</b> Proper land-use planning reduces vulnerability to hazards.</p><p>Protecting the environment is a key part of disaster risk reduction.</p>',
+   '<h2>13. Coordination Among Agencies</h2><p>Disaster management requires the coordinated effort of many agencies and organisations. Without proper coordination, response becomes chaotic and ineffective.</p><p>Coordination is needed between:</p><p><b>Government :</b> Policy-making and resource allocation.</p><p><b>Local Administration :</b> Implementing plans at the ground level.</p><p><b>Emergency Services :</b> Fire, police, and medical services.</p><p><b>Health Departments :</b> Providing medical care and preventing disease outbreaks.</p><p><b>NGOs :</b> Providing relief material and support services.</p><p><b>Volunteers :</b> Helping in rescue, relief, and rehabilitation.</p><p><b>Local Communities :</b> Participating in preparedness and response activities.</p><p>Proper coordination prevents confusion and ensures a quick and effective response.</p>',
+   '<h2>14. Faster Recovery</h2><p>Recovery is the process of restoring normal life after a disaster. Preparedness helps make recovery faster and more organised.</p><p><b>Restoration of Essential Services :</b> Bringing back electricity, water, and communication.</p><p><b>Rebuilding Homes :</b> Providing safe housing for displaced people.</p><p><b>Restoring Livelihoods :</b> Helping people get back to work and restart businesses.</p><p><b>Repairing Infrastructure :</b> Rebuilding roads, bridges, and public buildings.</p><p><b>Psychological and Social Support :</b> Helping people cope with trauma and loss.</p><p><b>Long-Term Rehabilitation :</b> Planning for sustainable recovery and future resilience.</p><p>Preparedness ensures that recovery is quicker and more effective.</p>',
+   '<h2>15. Education and Awareness</h2><p>Education and awareness are powerful tools for disaster risk reduction. People who are informed are better prepared and more resilient.</p><p><b>Role of Schools and Colleges :</b> Including disaster management in the curriculum and conducting drills.</p><p><b>Role of Teachers :</b> Educating students about hazards, safety measures, and emergency procedures.</p><p><b>Role of Students :</b> Learning first aid, emergency communication, and safe evacuation practices.</p><p><b>Role of Community Organisations :</b> Spreading awareness and organising training programmes.</p><p>Important topics for education and awareness include:</p><ul><li>First Aid</li><li>Emergency Communication</li><li>Safe Evacuation</li><li>Disaster Drills</li><li>Responsible Behaviour</li></ul>',
+   '<h2>16. Climate and Emerging Risks</h2><p>The world is facing new and emerging risks due to changing environmental conditions. These risks require continuous preparedness and adaptation.</p><p><b>Changing Environmental Conditions :</b> Changes in weather patterns are increasing the frequency of extreme events.</p><p><b>Extreme Weather Risks :</b> More intense floods, cyclones, heatwaves, and droughts.</p><p><b>Urbanisation :</b> Rapid growth of cities is increasing exposure to hazards.</p><p><b>Population Growth :</b> More people living in hazard-prone areas.</p><p><b>Technological Risks :</b> Industrial and chemical hazards in modern society.</p><p><b>Need for Continuous Preparedness :</b> Disaster risk management must adapt to new and changing risks.</p>',
+   '<h2>17. Role of Students and Communities</h2><p>Students and communities play a very important role in disaster risk management. Their active participation makes preparedness and response more effective.</p><p><b>Awareness :</b> Spreading knowledge about hazards and safety measures.</p><p><b>First-Aid Learning :</b> Learning basic first-aid skills to help during emergencies.</p><p><b>Emergency Drills :</b> Participating in mock drills and evacuation practices.</p><p><b>Responsible Communication :</b> Sharing only verified information and avoiding rumours.</p><p><b>Helping Vulnerable People :</b> Assisting the elderly, children, and disabled during emergencies.</p><p><b>Avoiding Rumours :</b> Preventing panic by not spreading unverified information.</p><p><b>Following Official Instructions :</b> Cooperating with authorities during emergencies.</p>',
+   '<h2>Conclusion</h2><p>Disaster Risk Management is of utmost importance in today\'s world. Disasters can strike at any time and cause massive loss of life, property, and livelihood. The study of DRM helps us understand how to prepare for, respond to, and recover from disasters.</p><p>From the above discussion, it is clear that DRM helps in protecting human life, reducing economic loss, and building community resilience. It involves prevention, mitigation, preparedness, response, and recovery.</p><p>Early warning systems, community preparedness, infrastructure protection, environmental conservation, and coordination among agencies are essential components of disaster risk management.</p><p>Education and awareness play a key role in making people informed and responsible. Students and communities must actively participate in disaster preparedness activities.</p><p>In conclusion, the study of Disaster Risk Management is essential for building a safer, more resilient, and sustainable society. Every individual must contribute to reducing disaster risk and protecting lives and livelihoods.</p>'
+  ],
+  bib:['Disaster Risk Management — B.Com Study Material.','Disaster Management — Reference Textbook.','Classroom notes provided by the Department of Commerce, C. M. College (Arts & Commerce), Darbhanga.','B.Com. Semester III study material and previous years\' question papers of Disaster Risk Management (AEC-3).']
+},
+{ c:'SEC-3', s:'Communication in Professional Life', t:'Process of Communication and Differences Between Formal and Informal Communication',
+  c1:'#22c55e', c2:'#14b8a6', ic:'💬',
+  ix:[['Introduction','4'],['Meaning of Communication','5'],['Importance of Communication','5'],['Elements of Communication Process','6'],['Sender','7'],['Encoding','7'],['Message','7'],['Channel','8'],['Receiver','8'],['Decoding','9'],['Feedback','9'],['Noise and Barriers','10'],['Formal Communication','11'],['Types of Formal Communication','12'],['Informal Communication','13'],['Features of Informal Communication','14'],['Formal vs Informal Communication','15'],['Importance in Professional Life','16'],['Characteristics of Effective Communication','17'],['Conclusion','18'],['Bibliography','19']],
+  pg:[
+   '<h2>1. Introduction</h2><p>Communication is the process of exchanging information, ideas, thoughts, and feelings between two or more persons. It is the foundation of all human interaction and is essential for personal and professional success.</p><p>In our daily life, we communicate with family members, friends, teachers, and colleagues. In professional organisations, communication takes place between employees, managers, customers, and other stakeholders. Clear communication is essential for the smooth functioning of any organisation.</p><p>Good communication helps in sharing information, giving instructions, solving problems, and making decisions. It brings coordination and teamwork among employees. On the other hand, poor communication leads to confusion, misunderstanding, conflict, and low productivity.</p><p>In this assignment, we will study the communication process in detail, including the role of sender, encoding, message, channel, receiver, decoding, and feedback. We will also study the differences between formal and informal communication in professional life.</p>',
+   '<h2>2. Meaning of Communication</h2><p>The word \'communication\' comes from the Latin word \'communis\', which means \'common\'. Communication means making information common between two or more persons.</p><p>In simple words, communication is the two-way process of transmitting and receiving information. It involves sharing of ideas, thoughts, opinions, and feelings.</p><h3 style="margin-top:32px;">3. Importance of Communication</h3><p><b>1. Sharing Information :</b> It helps in sharing information among people.</p><p><b>2. Coordination :</b> It brings coordination between different departments and individuals.</p><p><b>3. Decision-Making :</b> It provides the information needed for taking correct decisions.</p><p><b>4. Teamwork :</b> It promotes teamwork and cooperation.</p><p><b>5. Leadership :</b> Effective leaders communicate clearly with their team members.</p><p><b>6. Customer Relations :</b> It helps in building good relationships with customers.</p><p><b>7. Reducing Misunderstanding :</b> It reduces confusion and misunderstanding.</p><p><b>8. Improving Productivity :</b> It improves efficiency and productivity.</p>',
+   '<h2>4. Process of Communication</h2><p>Communication is a continuous process. It involves several steps from the creation of an idea by the sender to the response of the receiver. The main elements of the communication process are shown below.</p><div class="diagram">SENDER<br><span class="arrow">↓</span>ENCODING<br><span class="arrow">↓</span>MESSAGE<br><span class="arrow">↓</span>CHANNEL<br><span class="arrow">↓</span>RECEIVER<br><span class="arrow">↓</span>DECODING<br><span class="arrow">↓</span>FEEDBACK</div><p>Each of these steps is explained in detail on the following pages.</p>',
+   '<h3>5. Sender</h3><p>The sender is the person who starts the communication process. The sender has an idea, thought, or information that he wants to share with another person.</p><p>The sender decides the purpose of communication and the best way to convey the message.</p><h3 style="margin-top:32px;">6. Encoding</h3><p>Encoding is the process of converting ideas into a form that can be understood by the receiver. This may involve using:</p><ul><li>Words</li><li>Symbols</li><li>Gestures</li><li>Images</li><li>Language</li></ul><h3 style="margin-top:32px;">7. Message</h3><p>The message is the actual information, idea, instruction, opinion, or feeling that the sender wants to communicate.</p><p>The message should be clear and complete so that the receiver can understand it correctly.</p>',
+   '<h3>8. Channel</h3><p>The channel is the medium through which the message travels from the sender to the receiver. The choice of channel depends on the nature of the message and the situation.</p><p>Common channels of communication are:</p><ul><li>Face-to-face communication</li><li>Telephone</li><li>Email</li><li>Letter</li><li>Meeting</li><li>Digital communication</li></ul><h3 style="margin-top:32px;">9. Receiver</h3><p>The receiver is the person for whom the message is intended. The receiver plays a very important role in the communication process.</p><p>The receiver must pay attention, listen carefully, and try to understand the message in the same sense in which the sender intended it.</p>',
+   '<h3>10. Decoding</h3><p>Decoding is the process by which the receiver interprets and understands the message. The receiver converts the symbols or words back into meaningful ideas.</p><p>If the receiver does not understand the message correctly, communication fails.</p><h3 style="margin-top:32px;">11. Feedback</h3><p>Feedback is the response of the receiver to the message. It tells the sender whether the message has been understood correctly or not.</p><p><b>Importance of Feedback :</b></p><ul><li>Confirms understanding of the message</li><li>Helps correct misunderstanding</li><li>Makes communication two-way</li><li>Improves future communication</li></ul><div class="diagram">MESSAGE<br><span class="arrow">↓</span>RECEIVER<br><span class="arrow">↓</span>UNDERSTANDING<br><span class="arrow">↓</span>FEEDBACK</div>',
+   '<h3>12. Noise and Barriers</h3><p>Noise refers to anything that interferes with the communication process and distorts the message. Barriers are the obstacles that prevent effective communication.</p><p><b>1. Physical Barriers :</b> Noise, distance, poor network, closed doors. <span class="u-green">Example :</span> Loud traffic noise during a phone call.</p><p><b>2. Language Barriers :</b> Different languages or difficult words. <span class="u-green">Example :</span> Using technical terms with a person who does not understand them.</p><p><b>3. Psychological Barriers :</b> Fear, stress, lack of attention, prejudice.</p><p><b>4. Cultural Differences :</b> Different customs, beliefs, and values.</p><p><b>5. Technical Problems :</b> Faulty equipment, poor internet connection.</p><p><b>6. Poor Listening :</b> Not paying attention to the speaker.</p><p><b>7. Unclear Message :</b> Vague or incomplete information.</p><p><b>8. Wrong Communication Channel :</b> Using an unsuitable medium for the message.</p>',
+   '<h3>13. Formal Communication</h3><p>Formal communication refers to the official communication that takes place within an organisation through established channels and procedures.</p><p><b>Features :</b></p><ul><li>It is official communication.</li><li>It follows the organizational hierarchy.</li><li>It follows rules and procedures.</li><li>It usually has written records.</li><li>It serves a professional purpose.</li></ul><p><b>Examples :</b></p><ul><li>Official letter</li><li>Office email</li><li>Notice</li><li>Report</li><li>Meeting</li><li>Official instruction</li></ul><p>Formal communication is essential for maintaining discipline, order, and accountability in an organisation.</p>',
+   '<h3>14. Types of Formal Communication</h3><p><b>A. Downward Communication :</b> Information flows from management to employees.</p><div class="diagram">MANAGEMENT<br><span class="arrow">↓</span>EMPLOYEES</div><p><b>B. Upward Communication :</b> Information flows from employees to management.</p><div class="diagram">EMPLOYEES<br><span class="arrow">↓</span>MANAGEMENT</div><p><b>C. Horizontal Communication :</b> Communication between employees at the same level.</p><div class="diagram">EMPLOYEE ↔ EMPLOYEE</div><p><b>D. Diagonal Communication :</b> Different departments or levels communicate directly for organizational work.</p>',
+   '<h3>15. Informal Communication</h3><p>Informal communication refers to the unofficial communication that takes place between people in an organisation. It does not follow any fixed rules or hierarchy.</p><p><b>Features :</b></p><ul><li>It is unofficial communication.</li><li>It is based on personal interaction.</li><li>It involves casual discussion.</li><li>It provides quick exchange of information.</li><li>It helps build relationships.</li></ul><p><b>Examples :</b></p><ul><li>Friendly conversation</li><li>Personal message</li><li>Informal discussion</li><li>Casual workplace interaction</li></ul><p>Informal communication often spreads faster than formal communication and can be useful for quick exchange of ideas.</p>',
+   '<h3>16. Features of Informal Communication</h3><p><b>1. Flexible :</b> It does not follow rigid rules or procedures.</p><p><b>2. Fast :</b> Information spreads very quickly through informal channels.</p><p><b>3. Personal :</b> It is based on personal relationships and interaction.</p><p><b>4. Less Structured :</b> It does not follow a fixed pattern or hierarchy.</p><p><b>5. Social Interaction :</b> It promotes social interaction among employees.</p><p><b>6. Quick Exchange of Ideas :</b> Ideas and suggestions can be shared freely.</p><p><b>7. Helps Build Relationships :</b> It strengthens personal bonds among team members.</p><p><b>Limitation :</b> Informal information may sometimes be incomplete, inaccurate, or based on rumours.</p>',
+   '<h2 class="center" style="margin-bottom:20px;">Formal vs Informal Communication</h2><table class="comp"><tr><th style="width:50%;">Formal Communication</th><th style="width:50%;">Informal Communication</th></tr><tr><td>Official in nature</td><td>Unofficial in nature</td></tr><tr><td>Structured and planned</td><td>Flexible and spontaneous</td></tr><tr><td>Follows organizational channels</td><td>Does not necessarily follow hierarchy</td></tr><tr><td>Usually documented</td><td>Usually not documented</td></tr><tr><td>More controlled</td><td>More spontaneous</td></tr><tr><td>Suitable for official instructions</td><td>Suitable for quick/social communication</td></tr><tr><td>Slower in speed</td><td>Faster in speed</td></tr><tr><td>Has legal validity</td><td>May not have legal validity</td></tr></table>',
+   '<h3>18. Importance in Professional Life</h3><p><b>1. Teamwork :</b> Clear communication helps team members work together effectively.</p><p><b>2. Leadership :</b> Leaders must communicate clearly to guide and motivate their teams.</p><p><b>3. Decision-Making :</b> Good communication provides accurate information for decision-making.</p><p><b>4. Employee Coordination :</b> It ensures that all employees work towards common goals.</p><p><b>5. Customer Service :</b> It helps in understanding and satisfying customer needs.</p><p><b>6. Conflict Reduction :</b> It reduces misunderstandings and conflicts.</p><p><b>7. Productivity :</b> It improves efficiency and productivity.</p><p><b>8. Professional Relationships :</b> It builds trust and healthy relationships at work.</p><p><b>9. Organizational Success :</b> Effective communication is essential for the success of any organisation.</p>',
+   '<h2>Characteristics of Effective Communication</h2><p><b>1. Clarity :</b> The message must be clear and easy to understand.</p><p><b>2. Correctness :</b> The information must be accurate and correct.</p><p><b>3. Completeness :</b> The message must contain all necessary information.</p><p><b>4. Conciseness :</b> The message should be brief and to the point.</p><p><b>5. Proper Tone :</b> The tone should be polite and appropriate.</p><p><b>6. Active Listening :</b> The receiver must listen attentively.</p><p><b>7. Appropriate Channel :</b> The right channel must be chosen for the message.</p><p><b>8. Feedback :</b> The receiver must respond to the message.</p><div class="diagram">CLEAR MESSAGE<br><span class="arrow">+</span>RIGHT CHANNEL<br><span class="arrow">+</span>GOOD LISTENING<br><span class="arrow">+</span>FEEDBACK<br><span class="arrow">↓</span>EFFECTIVE COMMUNICATION</div>',
+   '<h2>Conclusion</h2><p>Communication is a fundamental part of human life and is essential for the success of any organisation. The communication process involves several elements such as sender, encoding, message, channel, receiver, decoding, and feedback.</p><p>Each element plays an important role in making communication effective. Noise and barriers can interfere with the process and must be removed or reduced for clear communication.</p><p>Formal and informal communication are both important in professional life. Formal communication provides structure, discipline, and official records, while informal communication promotes quick exchange of ideas and strengthens relationships.</p><p>Effective communication is essential for teamwork, leadership, decision-making, customer service, and overall productivity. It reduces misunderstanding and conflict, and helps in building a positive work environment.</p><p>In conclusion, good communication skills are very important for every individual, especially for students of commerce who will work in professional organisations. Clear, correct, and timely communication is the key to personal and professional success.</p>'
+  ],
+  bib:['Communication in Professional Life — B.Com Study Material.','Business Communication — Reference Textbook, Sultan Chand & Sons.','Classroom notes provided by the Department of Commerce, C. M. College (Arts & Commerce), Darbhanga.','B.Com. Semester III study material and previous years\' question papers of Communication in Professional Life (SEC-3).']
+},
+{ c:'MJC-3', s:'Business Law', t:'Essentials of a Valid Contract',
+  c1:'#f5c451', c2:'#f97316', ic:'⚖️',
+  ix:[['Introduction','4'],['Meaning of Contract','5'],['Essentials of a Valid Contract','6'],['Offer and Acceptance','6'],['Intention to Create Legal Relations','6'],['Lawful Consideration','7'],['Competency of Parties','7'],['Free Consent','8'],['Lawful Object','10'],['Certainty of Terms','10'],['Possibility of Performance','10'],['Agreement Not Expressly Declared Void','11'],['Legal Formalities','11'],['Importance of Valid Contract','12'],['Conclusion','13'],['Bibliography','14']],
+  pg:[
+   '<h2>Introduction</h2><p>A contract is one of the most important instruments of modern business life. Every day, millions of business transactions take place on the basis of agreements between two or more persons. When such an agreement is recognised by law and can be enforced in a court of law, it becomes a contract.</p><p>Business without contracts is almost impossible. A trader purchases goods on credit, a shopkeeper sells on hire purchase, a company appoints an agent, a firm takes a loan from a bank — all these activities depend upon agreements which the law will enforce. Therefore, the study of contract law is essential for every student of commerce.</p><p>The law of contracts in India is mainly contained in the <b>Indian Contract Act, 1872</b>. The Act came into force on 1st September, 1872 and extends to the whole of India. Sections 1 to 75 of the Act deal with the general principles of contract, while the remaining sections deal with special contracts such as indemnity, guarantee, bailment, pledge and agency.</p><p>The main objective of the Act is to ensure that promises made by the parties are fulfilled and that the rights and duties arising out of agreements are properly protected. The Act also provides suitable remedies to the aggrieved party when a contract is broken.</p>',
+   '<h2>Meaning of Contract</h2><p>Section 2(h) of the Indian Contract Act, 1872 defines a contract as <b>"an agreement enforceable by law"</b>. Thus a contract has two essential elements — an agreement and its enforceability by law.</p><p>According to <b>Salmond</b>, a contract is "an agreement creating and defining obligations between the parties". According to <b>Sir William Anson</b>, a contract is "an agreement enforceable at law made between two or more persons, by which rights are acquired by one or more to acts or forbearances on the part of the other or others".</p><h3 class="u">Agreement</h3><p>Section 2(e) defines an agreement as <b>"every promise and every set of promises forming the consideration for each other"</b>. A promise is made when a proposal is accepted. Therefore, an agreement is made up of an offer on one side and its acceptance on the other side.</p><p><b>Agreement vs. Contract :</b> All contracts are agreements, but all agreements are not contracts. An agreement may be social, domestic or moral in nature and may not create any legal obligation. For example, if A invites B to dinner and B accepts, it is an agreement but not a contract, because the parties never intended to create legal relations.</p>',
+   '<h2>Essentials of a Valid Contract</h2><p>Section 10 of the Indian Contract Act, 1872 lays down the essentials of a valid contract. It states that <b>"all agreements are contracts if they are made by the free consent of parties competent to contract, for a lawful consideration and with a lawful object, and are not expressly declared to be void by law"</b>.</p><h3>1. Offer and Acceptance</h3><p>There must be a lawful offer made by one party and a lawful acceptance of that offer by the other party. The offer is called a proposal. The person who makes the offer is the <b>offeror</b> and the person who accepts it is the <b>offeree</b>. The acceptance must be absolute, unqualified and must be communicated to the offeror in the manner prescribed.</p><p><span class="u-green">Example :</span> If A offers to sell his book to B for Rs. 200 and B accepts the offer, a valid agreement comes into existence.</p><h3>2. Intention to Create Legal Relations</h3><p>The parties must intend to create legal relations between them. Social, domestic or moral agreements do not create legal obligations and therefore cannot be enforced in a court of law. The intention of the parties is judged from the circumstances of each case.</p><p><span class="u-green">Example :</span> In <i>Balfour v. Balfour</i>, a husband promised to pay his wife a monthly allowance while she stayed abroad. It was held that there was no intention to create legal relations, and hence no contract.</p>',
+   '<h3>3. Lawful Consideration</h3><p>Consideration means <b>"something in return"</b>. Section 2(d) defines consideration as — when at the desire of the promisor, the promisee or any other person has done or abstained from doing something, such act or abstinence is called a consideration for the promise.</p><p>Consideration must be lawful, real, and of some value in the eyes of law. It may be past, present or future, but it must not be forbidden by law. An agreement made without consideration is void (Sec. 25), except in certain cases such as natural love and affection, compensation for past voluntary services and a promise to pay a time-barred debt.</p><h3>4. Competency of Parties</h3><p>Section 11 lays down that every person is competent to contract who is (a) of the age of majority, (b) of sound mind, and (c) not disqualified from contracting by any law to which he is subject.</p><p>A person who has not completed eighteen years of age is a minor. An agreement with a minor is <b>void-ab-initio</b>, that is, void from the very beginning. This principle was laid down in the famous case of <i>Mohori Bibee v. Dharmodas Ghose</i>.</p><p>Persons of unsound mind include idiots, lunatics and intoxicated persons. Such persons cannot make a valid contract. Persons disqualified by law include alien enemies, insolvents and convicts.</p>',
+   '<h3>5. Free Consent</h3><p>Section 13 says that two or more persons are said to consent when they agree upon the same thing in the same sense. This is known as <b>consensus-ad-idem</b>. Section 14 provides that consent is said to be free when it is not caused by coercion, undue influence, fraud, misrepresentation or mistake.</p><p>If the consent of a party is not free, the contract becomes <b>voidable</b> at the option of the aggrieved party. The five defects of free consent are explained below.</p><h3>(a) Coercion</h3><p>Coercion means committing or threatening to commit any act forbidden by the Indian Penal Code, or the unlawful detaining of any property, with the intention of causing a person to enter into an agreement (Sec. 15).</p><p><span class="u-green">Example :</span> A threatens to shoot B if he does not sell his house to him. B agrees out of fear. Here the consent of B is obtained by coercion.</p><h3>(b) Undue Influence</h3><p>A contract is said to be induced by undue influence where the relations subsisting between the parties are such that one party is in a position to dominate the will of the other and uses that position to obtain an unfair advantage (Sec. 16).</p><p>Such relations may exist between doctor and patient, guru and disciple, parent and child, or employer and employee.</p>',
+   '<h3>(c) Fraud</h3><p>Fraud means a false statement made intentionally to deceive the other party. Section 17 includes — suggestion of an untrue fact, active concealment of a fact, a promise made without any intention of performing it, and any other act fitted to deceive.</p><p><span class="u-green">Example :</span> A sells a horse to B stating that the horse is sound, knowing fully well that it is unsound. This is fraud.</p><h3>(d) Misrepresentation</h3><p>Misrepresentation means a false statement of fact made innocently and without any intention to deceive the other party. The person making the statement honestly believes it to be true (Sec. 18).</p><p>The main difference between fraud and misrepresentation is that in fraud the intention is to deceive, whereas in misrepresentation there is no such intention. In both cases the contract is voidable at the option of the aggrieved party.</p><h3>(e) Mistake</h3><p>Mistake means an erroneous belief about something. Mistake may be of two kinds — mistake of law and mistake of fact. A bilateral mistake as to a matter of fact makes the agreement <b>void</b> (Sec. 20).</p><p><span class="u-green">Example :</span> A agrees to sell a horse to B, but unknown to both parties the horse is already dead. The agreement is void. Unilateral mistake, however, is generally not a ground for avoiding a contract.</p>',
+   '<h3>6. Lawful Object</h3><p>The object of the agreement must be lawful. Section 23 provides that an agreement is void if its object or consideration is forbidden by law, is of such a nature that it would defeat the provisions of any law, is fraudulent, involves injury to the person or property of another, or is immoral or opposed to public policy.</p><p><span class="u-green">Example :</span> An agreement to sell smuggled goods, or an agreement to commit a crime, is void because its object is unlawful.</p><h3>7. Certainty of Terms</h3><p>Section 29 provides that agreements, the meaning of which is not certain, or capable of being made certain, are void. The terms of the contract must be clear, definite and certain so that the parties may know exactly what they have to do.</p><p><span class="u-green">Example :</span> A agrees to sell to B "a hundred tons of oil". Nothing is stated about the kind of oil. The agreement is void for uncertainty.</p><h3>8. Possibility of Performance</h3><p>Section 56 says that an agreement to do an impossible act is void. An act which is impossible in itself cannot be enforced by law.</p><p><span class="u-green">Example :</span> A agrees to bring a dead man back to life, or to discover a treasure by magic. Such agreements are void. However, an act which is difficult but not impossible is valid.</p>',
+   '<h3>9. Agreement Not Expressly Declared Void</h3><p>The agreement must not be one which the law has expressly declared to be void. The Indian Contract Act declares the following agreements to be void —</p><ul><li>Agreement in restraint of marriage (Sec. 26)</li><li>Agreement in restraint of trade (Sec. 27)</li><li>Agreement in restraint of legal proceedings (Sec. 28)</li><li>Agreements with uncertain meaning (Sec. 29)</li><li>Wagering agreements (Sec. 30)</li></ul><p>If an agreement falls under any of these categories, it cannot be enforced even if all the other essentials of a valid contract are present.</p><h3>10. Legal Formalities</h3><p>Generally, a contract may be either oral or written. But where the law requires that a contract must be in writing, registered or attested, those formalities must be duly complied with.</p><p><span class="u-green">Example :</span> A contract for the sale of immovable property must be in writing and registered under the Registration Act, 1908. Similarly, a negotiable instrument must be in writing.</p><p>If the required legal formality is not observed, the contract becomes unenforceable in a court of law.</p>',
+   '<h2>Importance of a Valid Contract</h2><p>A valid contract is of great importance in the world of business. Its main advantages are explained below.</p><h3>1. Legal Protection</h3><p>A valid contract gives legal protection to the parties. If one party fails to perform his promise, the other party can approach the court and claim a suitable remedy.</p><h3>2. Clear Rights and Duties</h3><p>A contract clearly defines the rights and duties of both the parties. This removes confusion, doubt and misunderstanding between them.</p><h3>3. Reduction of Disputes</h3><p>Since the terms and conditions are clearly stated in advance, the chances of disputes and litigation between the parties are greatly reduced.</p><h3>4. Business Certainty</h3><p>Businessmen can plan their activities with confidence only when they know that the agreements made by them will be enforced by law.</p><h3>5. Enforcement of Promises</h3><p>The law of contract ensures that promises are not broken. It makes a promise legally binding on the person who makes it.</p><h3>6. Protection of Parties</h3><p>Weak parties such as consumers, workers and minors are protected by the law of contract against exploitation by stronger parties.</p>',
+   '<h2>Conclusion</h2><p>A contract is the foundation of all business activities. Without the law of contracts, trade and commerce cannot run smoothly. The Indian Contract Act, 1872 provides a complete legal framework for making, performing and enforcing contracts in India.</p><p>From the above study it is clear that a valid contract must contain certain essential elements. There must be a lawful offer and acceptance, an intention to create legal relations, lawful consideration, competent parties, free consent, lawful object, certainty of terms, possibility of performance, and the agreement must not be one which is expressly declared void by law. Where the law requires a particular formality, that must also be observed.</p><p>If any one of these essentials is missing, the agreement becomes void, voidable or unenforceable. For example, an agreement with a minor is void from the very beginning, and a contract made under coercion or fraud is voidable at the option of the aggrieved party.</p><p>Thus it can be concluded that the essentials of a valid contract are not merely technical requirements. They are the safeguards which protect the interests of the parties and maintain the confidence of the business world. A student of commerce must therefore understand these essentials thoroughly, because they form the base of every business transaction.</p>'
+  ],
+  bib:['The Indian Contract Act, 1872 — Bare Act.','Elements of Mercantile Law — N. D. Kapoor, Sultan Chand & Sons, New Delhi.','Business Law — M. C. Kuchhal & Vivek Kuchhal, Vikas Publishing House.','Business Regulatory Framework — B.Com. Semester III textbook.','B.Com. Semester III classroom notes, Department of Commerce, C. M. College (Arts & Commerce), Darbhanga.','Previous years\' university question papers and syllabus of Business Law (MJC-3).']
+},
+{ c:'MJC-4', s:'Business Mathematics and Statistics', t:'Methods of Collection of Primary Data',
+  c1:'#a855f7', c2:'#6366f1', ic:'📊',
+  ix:[['Introduction','4'],['Meaning of Primary Data','5'],['Direct Personal Investigation','6'],['Indirect Oral Investigation','7'],['Information Through Local Correspondents','8'],['Mailed Questionnaire','9'],['Schedule Through Enumerators','10'],['Telephone Interview','11'],['Online Survey','12'],['Observation Method','13'],['Experimental Method','14'],['Comparison of Major Methods','15'],['Advantages of Primary Data','16'],['Limitations of Primary Data','16'],['Conclusion','17'],['Bibliography','18']],
+  pg:[
+   '<h2>Introduction</h2><p>Data is the raw material of statistics. Without data, statistical analysis is impossible. In the modern world, data plays a very important role in the field of business, economics, and social sciences. The word \'data\' refers to the collection of facts, figures, and observations that are used for analysis and decision-making.</p><p>Data can be broadly classified into two categories — <b>Primary Data</b> and <b>Secondary Data</b>. Primary data refers to the data which is collected for the first time by the investigator for a specific purpose. Secondary data, on the other hand, refers to data that has already been collected by someone else and is used by the investigator for his own purpose.</p><p>The collection of primary data is a very crucial step in any statistical investigation. If the data collected is inaccurate, the conclusions drawn from it will also be wrong. Therefore, the investigator must be very careful while collecting primary data.</p><p>In business research, primary data is highly valuable because it provides original and up-to-date information about the market, consumer behaviour, and business trends. This assignment discusses the various methods of collecting primary data in detail.</p>',
+   '<h2>Meaning of Primary Data</h2><p>Primary data means the data which is collected by the investigator himself, for the first time, from the original source. It is also known as raw data or original data. It is collected specifically to address the problem at hand.</p><p><span class="u-green">Example :</span> If a businessman wants to know the buying habits of his customers, he may conduct a survey among them. The information collected through this survey will be primary data for him.</p><p>Primary data is original in nature and is collected with a specific objective in mind. It is not available in published form and must be collected fresh every time.</p><h3 style="margin-top:32px;">Importance of Primary Data</h3><p>Primary data is of great importance in statistical and business research due to the following reasons —</p><p><b>1. Original Information :</b> Primary data provides original and first-hand information which is free from the errors of secondary data.</p><p><b>2. Specific Purpose :</b> It is collected for a specific purpose. Therefore, it is highly relevant to the problem under study.</p><p><b>3. Current Information :</b> Primary data provides current and up-to-date information about the subject.</p><p><b>4. Market Research :</b> It is very useful in market research, where the opinions and preferences of consumers need to be studied.</p>',
+   '<h3>3. Direct Personal Investigation</h3><p><b>Meaning :</b> In this method, the investigator collects the data personally by contacting the respondents face-to-face. He goes to the field, meets the people, and asks them questions related to the investigation.</p><p><b>Procedure :</b> The investigator may conduct interviews with the respondents individually or in groups. He must be polite and patient while asking questions. The responses are recorded carefully.</p><p><b>Advantages :</b></p><ul><li>The investigator can get first-hand information.</li><li>He can clarify doubts and cross-check the information.</li><li>The accuracy of data is generally very high.</li></ul><p><b>Limitations :</b></p><ul><li>It is very costly and time-consuming.</li><li>It can only cover a limited area.</li><li>The presence of the investigator may influence the responses.</li></ul><p><span class="u-green">Example :</span> A researcher wants to study the living conditions of workers in a factory. He visits the factory, talks to the workers personally, and collects the required information.</p>',
+   '<h3>4. Indirect Oral Investigation</h3><p><b>Meaning :</b> In this method, the investigator does not contact the original respondents directly. Instead, he collects information from third parties or witnesses who are expected to know about the subject.</p><p><b>Method :</b> The investigator prepares a list of witnesses or informants. He interviews them and records their statements. The information collected from different sources is then cross-checked and compiled.</p><p><b>Advantages :</b></p><ul><li>It is useful when the respondents are not directly accessible.</li><li>It is less costly and less time-consuming than direct investigation.</li><li>It can be used to collect sensitive information.</li></ul><p><b>Limitations :</b></p><ul><li>The information may be biased or inaccurate.</li><li>The witnesses may not have complete knowledge.</li><li>Cross-checking is difficult.</li></ul><p><span class="u-green">Example :</span> To study the causes of a fire accident in a factory, the investigator may interview the workers who witnessed the incident, rather than the owner.</p>',
+   '<h3>5. Information Through Local Correspondents</h3><p><b>Meaning :</b> In this method, the investigator appoints local agents or correspondents in different areas. These correspondents collect the data from their respective areas and send it to the investigator.</p><p><b>Role of Correspondents :</b> The local correspondents are usually people who are well-known in their area, such as teachers, shopkeepers, or village heads. They are given specific instructions and formats for collecting data.</p><p><b>Advantages :</b></p><ul><li>It is a very economical method.</li><li>It can cover a wide geographical area.</li><li>Local correspondents have good knowledge of their area.</li></ul><p><b>Limitations :</b></p><ul><li>The quality of data depends on the ability of the correspondents.</li><li>There is a possibility of personal bias.</li><li>The investigator has less control over the collection process.</li></ul><p><span class="u-green">Example :</span> A newspaper agency appoints local reporters in different districts to collect news about local events.</p>',
+   '<h3>6. Mailed Questionnaire</h3><p><b>Meaning :</b> In this method, a list of questions (questionnaire) is prepared and sent to the respondents by mail or post. The respondents are requested to fill it up and return it to the investigator.</p><p><b>Preparation of Questionnaire :</b> The questionnaire must be carefully designed. It should be simple, clear, and easy to understand. A covering letter is usually attached to explain the purpose of the survey.</p><p><b>Distribution and Collection :</b> The questionnaires are mailed to the respondents. They fill it at their convenience and return it by post. Reminders may be sent to increase the response rate.</p><p><b>Advantages :</b></p><ul><li>It is very economical for a large number of respondents.</li><li>It can cover a wide geographical area.</li><li>The respondents can fill it at their convenience.</li></ul><p><b>Limitations :</b></p><ul><li>The response rate is generally very low.</li><li>It can only be used for literate respondents.</li><li>There is no opportunity to clarify doubts.</li></ul>',
+   '<h3>7. Schedule Through Enumerators</h3><p><b>Meaning :</b> In this method, trained investigators called enumerators go to the respondents and fill the schedule (questionnaire) themselves. The respondents only provide the answers orally.</p><p><b>Role of Enumerator :</b> The enumerator must be polite, patient, and well-trained. He must explain the questions to the respondents and record their answers accurately.</p><p><b>Method :</b> The enumerator visits the respondent, asks the questions one by one, and fills the schedule. This method is very useful for illiterate respondents.</p><p><b>Advantages :</b></p><ul><li>The response rate is very high.</li><li>The data is more accurate and reliable.</li><li>It can be used for both literate and illiterate respondents.</li></ul><p><b>Limitations :</b></p><ul><li>It is very costly and time-consuming.</li><li>It requires a large number of trained enumerators.</li><li>The enumerator may influence the responses.</li></ul>',
+   '<h3>8. Telephone Interview</h3><p><b>Meaning :</b> In this method, the investigator collects the data by contacting the respondents over the telephone. It is a form of oral interview but without face-to-face contact.</p><p><b>Procedure :</b> The investigator prepares a list of questions and calls the respondents. He asks the questions and records the answers. The call must be short and to the point.</p><p><b>Advantages :</b></p><ul><li>It is very fast and quick.</li><li>It covers a wide geographical area in a short time.</li><li>It is less costly than personal interviews.</li></ul><p><b>Limitations :</b></p><ul><li>It can only be used for people who have telephones.</li><li>The respondent may not be willing to talk for a long time.</li><li>Visual aids cannot be used.</li></ul><p><b>Suitable Situations :</b> This method is suitable when the information required is simple and the respondents are spread over a wide area.</p><p><span class="u-green">Example :</span> A bank may conduct a telephone survey to find out the satisfaction level of its customers.</p>',
+   '<h3>9. Online Survey</h3><p><b>Meaning :</b> With the advancement of technology, online surveys have become very popular. In this method, data is collected through the internet using online forms, emails, and websites.</p><p><b>Methods :</b></p><ul><li><b>Online Forms :</b> Google Forms, SurveyMonkey, etc.</li><li><b>Email Surveys :</b> Questionnaires sent via email.</li><li><b>Web Questionnaires :</b> Forms embedded on websites.</li></ul><p><b>Advantages :</b></p><ul><li>It is very fast and economical.</li><li>It can reach a large number of people globally.</li><li>The data is automatically stored and analyzed.</li></ul><p><b>Limitations :</b></p><ul><li>It can only be used for internet users.</li><li>There is a possibility of fake responses.</li><li>Technical issues may arise.</li></ul><p><b>Modern Use :</b> Online surveys are widely used in modern business research for product feedback, customer satisfaction, and market trends.</p><p><span class="u-green">Example :</span> A company launches a new product and creates a Google Form to collect feedback from its online customers.</p>',
+   '<h3>10. Observation Method</h3><p><b>Meaning :</b> In this method, the investigator collects the data by observing the behaviour or characteristics of the respondents, without asking them any questions.</p><p><b>Types :</b></p><ul><li><b>Participant Observation :</b> The observer becomes a part of the group.</li><li><b>Non-Participant Observation :</b> The observer remains an outsider.</li><li><b>Controlled Observation :</b> Conducted in a controlled environment.</li><li><b>Uncontrolled Observation :</b> Conducted in a natural environment.</li></ul><p><b>Advantages :</b></p><ul><li>It provides accurate and unbiased information.</li><li>It does not depend on the willingness of the respondents.</li><li>It is useful for studying children and animals.</li></ul><p><b>Limitations :</b></p><ul><li>It is very time-consuming.</li><li>The observer may be biased.</li><li>It cannot be used to study past events.</li></ul><p><span class="u-green">Example :</span> A researcher observes the buying behaviour of customers in a supermarket to study their preferences.</p>',
+   '<h3>11. Experimental Method</h3><p><b>Meaning :</b> In this method, the investigator conducts experiments to collect the data. The experiments are conducted in a controlled environment to study the cause-and-effect relationship.</p><p><b>Controlled Experiment :</b> The variables are controlled by the investigator. One variable is changed at a time to observe its effect on another variable.</p><p><b>Business/Scientific Use :</b> This method is widely used in scientific research and business research. For example, a company may test a new product in a test market to see its performance.</p><p><b>Advantages :</b></p><ul><li>It provides highly accurate and reliable data.</li><li>It helps in establishing cause-and-effect relationships.</li><li>The conditions can be controlled.</li></ul><p><b>Limitations :</b></p><ul><li>It is very expensive and difficult to conduct.</li><li>It may not be possible to control all variables.</li><li>The results may not always be applicable to real-world situations.</li></ul>',
+   '<h2 class="center" style="margin-bottom:20px;">Comparison of Major Methods</h2><table class="comp"><tr><th style="width:20%;">Method</th><th style="width:25%;">Main Feature</th><th style="width:27%;">Advantage</th><th style="width:28%;">Limitation</th></tr><tr><td>Personal Investigation</td><td>Face-to-face interaction</td><td>High accuracy</td><td>Very costly and time-consuming</td></tr><tr><td>Oral Investigation</td><td>Information from third parties</td><td>Useful for sensitive topics</td><td>Possibility of bias</td></tr><tr><td>Questionnaire</td><td>Sending questionnaire by post</td><td>Very economical for large groups</td><td>Low response rate</td></tr><tr><td>Enumerator Schedule</td><td>Trained investigators fill schedules</td><td>High response rate and accuracy</td><td>Very costly</td></tr><tr><td>Telephone</td><td>Data collection over phone</td><td>Fast and quick</td><td>Limited to phone users</td></tr><tr><td>Online Survey</td><td>Data collection via internet</td><td>Global reach and automatic analysis</td><td>Only for internet users</td></tr><tr><td>Observation</td><td>Observing behaviour</td><td>Unbiased information</td><td>Time-consuming</td></tr><tr><td>Experiment</td><td>Conducting controlled experiments</td><td>Accurate cause-effect relationship</td><td>Very expensive</td></tr></table>',
+   '<h2>Advantages of Primary Data</h2><p><b>1. Original Information :</b> Primary data is original and collected for the first time. It is free from the errors and biases of secondary data.</p><p><b>2. Specific to Research Objective :</b> It is collected for a specific purpose. Therefore, it is highly relevant to the problem under study.</p><p><b>3. Current Information :</b> Primary data provides current and up-to-date information about the subject.</p><p><b>4. Better Control Over Collection :</b> The investigator has complete control over the data collection process.</p><p><b>5. Greater Relevance :</b> It provides a solid base for effective business decisions and planning.</p><h2 style="margin-top:32px;">Limitations of Primary Data</h2><p><b>1. Costly :</b> Collecting primary data is very expensive. It requires a lot of money, manpower, and resources.</p><p><b>2. Time-Consuming :</b> It takes a lot of time to collect primary data, especially when the area of study is large.</p><p><b>3. Requires Trained Investigators :</b> Primary data collection requires trained and experienced investigators.</p><p><b>4. Possibility of Response Bias :</b> The investigator or the respondents may introduce bias in the data collection process.</p><p><b>5. Non-Response Problem :</b> In methods like mailed questionnaires, the response rate is very low, which affects the reliability of the data.</p><p><b>6. Difficulty in Large Populations :</b> It is very difficult to collect primary data from a large population.</p>',
+   '<h2>Conclusion</h2><p>The collection of primary data is a very important step in any statistical investigation. The success of a research study largely depends on the quality and accuracy of the data collected. Primary data provides original, specific, and current information which is highly valuable for business research and decision-making.</p><p>From the above study, it is clear that there are various methods of collecting primary data. Each method has its own advantages and limitations. The choice of the method depends on the nature of the investigation, the size of the sample, the area of study, and the availability of resources.</p><p>The selection of the method also depends on the research objective, the population, the time available, the cost involved, the geographical area to be covered, and the type of information required.</p><p>For example, direct personal investigation is suitable for small and intensive studies, while mailed questionnaires are suitable for large-scale surveys. Online surveys have become very popular in recent times due to their speed and cost-effectiveness.</p><p>Thus, it can be concluded that the investigator must choose the most appropriate method for collecting primary data based on the requirements of the study. A careful and systematic approach to data collection will ensure accurate and reliable results, which will ultimately lead to sound business decisions.</p>'
+  ],
+  bib:['Business Statistics — S. C. Gupta & V. K. Kapoor, Sultan Chand & Sons, New Delhi.','Business Mathematics and Statistics — N. D. Vohra, McGraw Hill Education.','Fundamentals of Statistics — A. M. Goon, M. K. Gupta, and B. Dasgupta.','B.Com. Semester III classroom notes, Department of Commerce, C. M. College (Arts & Commerce), Darbhanga.','Previous years\' university question papers and syllabus of Business Mathematics and Statistics (MJC-4).']
+},
+{ c:'MIC-3', s:'Sales and Distribution Management', t:'Types of Channels of Distribution and Factors Affecting the Choice of Channel of Distribution',
+  c1:'#22d3ee', c2:'#3b82f6', ic:'🚚',
+  ix:[['Introduction','4'],['Meaning of Distribution','4'],['Meaning of Channel of Distribution','4'],['Importance of Distribution Channels','5'],['Types of Channels of Distribution','6'],['Direct Channel','6'],['One-Level Channel','7'],['Two-Level Channel','8'],['Three-Level Channel','9'],['Industrial Distribution Channel','10'],['Factors Affecting Choice of Distribution Channel','11'],['Product Factors','11'],['Market Factors','12'],['Company Factors','13'],['Middlemen Factors','14'],['Competition Factors','14'],['Environmental Factors','15'],['Cost and Control','15'],['Advantages of an Effective Distribution Channel','17'],['Conclusion','18'],['Bibliography','19']],
+  pg:[
+   '<h3>1. INTRODUCTION</h3><p>Distribution is one of the four important elements of the marketing mix, along with product, price, and promotion. It refers to the process of moving goods and services from the producer to the ultimate consumer. Without an effective distribution system, even the best products may fail to reach the customers.</p><p>In today\'s competitive business environment, availability of the right product at the right place and at the right time is very important. This is where distribution channels play a crucial role. They bridge the gap between the producer and the consumer.</p><h3 style="margin-top:32px;">2. MEANING OF CHANNEL OF DISTRIBUTION</h3><p>A channel of distribution is the path or route through which goods and services travel from the producer to the final consumer. It includes all the individuals and organisations involved in the transfer of ownership of goods.</p><p><b>Definition :</b> According to <b>Philip Kotler</b>, a distribution channel is "a set of interdependent organisations involved in the process of making a product or service available for use or consumption by the consumer or business user".</p>',
+   '<h3>3. IMPORTANCE OF CHANNELS OF DISTRIBUTION</h3><p>Channels of distribution are very important for both producers and consumers. Their main importance is explained below.</p><p><b>1. Connecting Producer and Consumer :</b> They act as a link between the producer and the consumer.</p><p><b>2. Availability of Products :</b> They make the products available at places convenient to the consumers.</p><p><b>3. Market Coverage :</b> They help in covering a wide geographical area and reaching more customers.</p><p><b>4. Storage :</b> They provide storage facilities so that goods are available throughout the year.</p><p><b>5. Transportation :</b> They help in the physical movement of goods from one place to another.</p><p><b>6. Financing :</b> Intermediaries often provide credit facilities which help in smooth business operations.</p><p><b>7. Promotion :</b> They help in promoting the products through displays, advertisements, and personal selling.</p><p><b>8. Customer Service :</b> They provide after-sales service and handle customer complaints.</p><p><b>9. Reduction of Producer\'s Burden :</b> They reduce the burden of distribution on the producer.</p>',
+   '<h2 class="center" style="margin-bottom:16px;">Types of Channels of Distribution</h2><h3>1. DIRECT CHANNEL</h3><div class="diagram">PRODUCER<br><span class="arrow">↓</span>CONSUMER</div><p><b>Explanation :</b> In this channel, there is no intermediary between the producer and the consumer. The producer directly sells the goods to the consumer.</p><p><b>Methods :</b> This can be done through online direct selling, company-owned outlets, direct sales, and door-to-door selling.</p><p><b>Example :</b> A farmer selling vegetables directly to consumers in a local market. A company selling its products through its own website.</p>',
+   '<h3>2. ONE-LEVEL CHANNEL</h3><div class="diagram">PRODUCER<br><span class="arrow">↓</span>RETAILER<br><span class="arrow">↓</span>CONSUMER</div><p><b>Explanation :</b> In this channel, one intermediary, the retailer, is involved between the producer and the consumer. The producer sells to the retailer, who then sells to the consumer.</p><p><b>Role of Retailer :</b> The retailer buys in large quantities from the producer and sells in small quantities to the consumers.</p><p><b>Suitability :</b> This channel is suitable for products that are perishable or have a small market.</p><p><b>Benefits :</b> It reduces the burden on the producer and provides convenience to consumers.</p><p><b>Limitations :</b> The market coverage is limited to the reach of the retailer.</p><p><b>Example :</b> A local bakery selling bread and cakes directly to a grocery store, which then sells to customers.</p>',
+   '<h3>3. TWO-LEVEL CHANNEL</h3><div class="diagram">PRODUCER<br><span class="arrow">↓</span>WHOLESALER<br><span class="arrow">↓</span>RETAILER<br><span class="arrow">↓</span>CONSUMER</div><p><b>Explanation :</b> This channel involves two intermediaries — the wholesaler and the retailer. The producer sells to the wholesaler, the wholesaler sells to the retailer, and the retailer sells to the final consumer.</p><p><b>Role of Wholesaler :</b> The wholesaler buys in bulk from the producer and sells in smaller quantities to the retailers.</p><p><b>Role of Retailer :</b> The retailer sells the goods to the ultimate consumers.</p><p><b>Advantages :</b> It provides wide market coverage and is suitable for consumer goods.</p><p><b>Limitations :</b> The channel is longer, which may increase the final price of the product.</p>',
+   '<h3>4. THREE-LEVEL CHANNEL</h3><div class="diagram">PRODUCER<br><span class="arrow">↓</span>AGENT<br><span class="arrow">↓</span>WHOLESALER<br><span class="arrow">↓</span>RETAILER<br><span class="arrow">↓</span>CONSUMER</div><p><b>Explanation :</b> This is the longest channel. It involves three intermediaries — the agent, the wholesaler, and the retailer.</p><p><b>Role of Agent :</b> The agent acts as a representative of the producer and helps in finding buyers or sellers.</p><p><b>Suitability :</b> This channel is useful when the producer wants to enter a new market or when the market is widely scattered.</p><p><b>Advantages :</b> It provides extensive market coverage.</p><p><b>Limitations :</b> It is the most expensive channel and the producer has the least control over distribution.</p>',
+   '<h3>5. INDUSTRIAL DISTRIBUTION CHANNEL</h3><div class="diagram">PRODUCER<br><span class="arrow">↓</span>INDUSTRIAL DISTRIBUTOR<br><span class="arrow">↓</span>INDUSTRIAL USER</div><p><b>Explanation :</b> This channel is used for industrial goods, which are meant for further production or business use, rather than for final consumption.</p><p><b>Industrial Goods :</b> These include raw materials, machinery, equipment, and components.</p><p><b>Business Customers :</b> The customers are other businesses or organisations, not individual consumers.</p><p><b>Specialized Distributors :</b> Industrial distributors are specialized in handling technical products and provide technical support to the buyers.</p><p><b>Example :</b> A manufacturer of machinery selling directly to a factory, or through an industrial distributor.</p>',
+   '<h2 class="center" style="margin-bottom:16px;">Factors Affecting the Choice of Channel</h2><p>The choice of a distribution channel is a very important decision. It depends on a number of factors, which can be broadly classified into product, market, company, middlemen, competition, environmental, and cost factors.</p><h3>1. PRODUCT FACTORS</h3><p><b>Nature of Product :</b> Perishable goods require shorter channels, while durable goods can use longer channels.</p><p><b>Unit Value :</b> High-value products are usually sold directly, while low-value products use longer channels.</p><p><b>Technical Nature :</b> Technical products require specialized channels with technical support.</p><p><b>Size and Weight :</b> Heavy and bulky products require shorter channels to reduce transportation costs.</p><p><b>Product Life Cycle :</b> New products may require direct selling, while mature products can use indirect channels.</p><p><b>Standardized vs Customized :</b> Standardized products can use longer channels, while customized products need direct selling.</p>',
+   '<h3>2. MARKET FACTORS</h3><p><b>Number of Customers :</b> If the number of customers is small, direct selling is suitable. If the number is large, indirect channels are more appropriate.</p><p><b>Geographical Concentration :</b> If customers are concentrated in a small area, direct selling is possible. If they are scattered, intermediaries are needed.</p><p><b>Size of Orders :</b> Large orders can be handled directly, while small and frequent orders require intermediaries.</p><p><b>Customer Buying Habits :</b> The buying habits of customers, such as frequency of purchase and preference for convenience, affect the choice of channel.</p><p><b>Type of Market :</b> Industrial markets use shorter channels, while consumer markets use longer channels.</p><p><b>Frequency of Purchase :</b> Products purchased frequently require wide distribution, while infrequent purchases can use shorter channels.</p>',
+   '<h3>3. COMPANY FACTORS</h3><p><b>Financial Resources :</b> A company with strong financial resources can afford to set up its own distribution network, while a weaker company may rely on intermediaries.</p><p><b>Size of Company :</b> Large companies often have their own distribution channels, while small companies depend on middlemen.</p><p><b>Management Ability :</b> A company with good management skills can handle its own distribution, while others may lack the expertise.</p><p><b>Marketing Experience :</b> Companies with extensive marketing experience can manage direct channels effectively.</p><p><b>Desired Degree of Control :</b> If a company wants greater control over distribution, it may choose a shorter channel.</p><p><b>Product Range :</b> A wide product range may require different channels for different products.</p><p><b>Company\'s Reputation :</b> A well-reputed company can attract better intermediaries and command better terms.</p>',
+   '<h3>4. MIDDLEMEN FACTORS</h3><p><b>Availability of Intermediaries :</b> The choice of channel depends on the availability of suitable middlemen in the market.</p><p><b>Services Offered :</b> The services offered by intermediaries, such as storage, transportation, and credit, influence the choice.</p><p><b>Cost :</b> The cost of using intermediaries must be compared with the benefits they provide.</p><p><b>Experience and Reputation :</b> Experienced and reputed intermediaries can help in better market coverage.</p><h3 style="margin-top:32px;">5. COMPETITION FACTORS</h3><p><b>Competitors\' Distribution Channels :</b> Companies often follow the distribution channels used by their competitors to stay competitive.</p><p><b>Market Competition :</b> In a highly competitive market, companies need to ensure wide availability of their products.</p><p><b>Need for Differentiation :</b> Companies may choose a different channel to differentiate themselves from competitors.</p>',
+   '<h3>6. ENVIRONMENTAL FACTORS</h3><p><b>Economic Conditions :</b> During a recession, companies may prefer shorter channels to reduce costs.</p><p><b>Government Policies :</b> Government regulations and policies can affect the choice of distribution channels.</p><p><b>Technology :</b> Advances in technology, such as e-commerce, have opened new distribution channels.</p><p><b>Legal Environment :</b> Laws related to trade, taxation, and consumer protection affect distribution decisions.</p><p><b>Social Changes :</b> Changes in consumer lifestyles and preferences also influence channel choices.</p><h3 style="margin-top:32px;">7. COST AND CONTROL</h3><p>The choice of channel involves a trade-off between cost, market coverage, control, and profitability. A longer channel may provide wider coverage but reduces the producer\'s control and increases costs. A shorter channel gives more control but requires more resources. Companies must balance all these factors to achieve their distribution objectives.</p>',
+   '<h2 class="center" style="margin-bottom:16px;">Comparison of Channels</h2><table class="comp"><tr><th style="width:18%;">Channel</th><th style="width:32%;">Route</th><th style="width:25%;">Main Benefit</th><th style="width:25%;">Limitation</th></tr><tr><td>Direct</td><td>Producer → Consumer</td><td>High control, direct feedback</td><td>Limited reach, high cost</td></tr><tr><td>One-Level</td><td>Producer → Retailer → Consumer</td><td>Simple, closer to consumer</td><td>Limited market coverage</td></tr><tr><td>Two-Level</td><td>Producer → Wholesaler → Retailer → Consumer</td><td>Wide coverage, suitable for consumer goods</td><td>Longer channel, higher price</td></tr><tr><td>Three-Level</td><td>Producer → Agent → Wholesaler → Retailer → Consumer</td><td>Extensive market coverage</td><td>Most expensive, least control</td></tr><tr><td>Industrial</td><td>Producer → Industrial Distributor → Industrial User</td><td>Technical support, specialized</td><td>Limited to industrial buyers</td></tr></table>',
+   '<h3>ADVANTAGES OF AN EFFECTIVE DISTRIBUTION CHANNEL</h3><p>An effective distribution channel provides many benefits to both the producer and the consumer.</p><p><b>1. Wider Market Coverage :</b> It helps in reaching a larger number of customers spread over a wide area.</p><p><b>2. Easy Availability :</b> It ensures that products are easily available to consumers at convenient locations.</p><p><b>3. Reduced Distribution Burden :</b> It reduces the burden of distribution on the producer.</p><p><b>4. Better Customer Service :</b> It provides better customer service and support.</p><p><b>5. Efficient Transportation :</b> It ensures efficient movement of goods from the producer to the consumer.</p><p><b>6. Storage Facilities :</b> It provides storage facilities to maintain steady supply.</p><p><b>7. Increased Sales :</b> It helps in increasing sales through wider reach and promotion.</p><p><b>8. Better Market Information :</b> It provides valuable feedback and market information to the producer.</p><p><b>9. Lower Distribution Difficulties :</b> It reduces the difficulties associated with distribution.</p><p><b>10. Customer Satisfaction :</b> It leads to higher customer satisfaction through timely availability of products.</p>',
+   '<h2>Conclusion</h2><p>The choice of a distribution channel is a crucial decision for any business organisation. There is no single distribution channel that is suitable for every business. The company must select its channel according to the nature of the product, the customers, the market size, its financial resources, the availability of intermediaries, the competition, the cost involved, and the desired degree of control.</p><p>A well-chosen distribution channel helps in making the products available to the customers at the right place and at the right time. It also helps in reducing the cost of distribution and increasing customer satisfaction.</p><p>On the other hand, a poor choice of distribution channel can lead to higher costs, lower sales, and customer dissatisfaction. Therefore, companies must carefully analyse all the factors before selecting a distribution channel.</p><p>Thus, it can be concluded that the success of a business depends not only on the quality of its products but also on the effectiveness of its distribution channel. A well-planned distribution strategy is essential for achieving long-term business success.</p>'
+  ],
+  bib:['Sales and Distribution Management — B.Com Study Material.','Principles of Marketing — Philip Kotler & Gary Armstrong, Pearson Education.','Marketing Management — Philip Kotler, Pearson Education.','B.Com. Semester III classroom notes, Department of Commerce, C. M. College (Arts & Commerce), Darbhanga.','Previous years\' university question papers and syllabus of Sales and Distribution Management (MIC-3).']
+}
+];
+
+/* ============ PARTICLES ============ */
+(function(){
+  var pc = document.getElementById('particles');
+  var count = window.innerWidth < 760 ? 18 : 34;
+  for (var i = 0; i < count; i++){
+    var p = document.createElement('span');
+    p.className = 'particle';
+    var s = Math.random() * 3 + 1.2;
+    p.style.width = s + 'px';
+    p.style.height = s + 'px';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDuration = (Math.random() * 12 + 10) + 's';
+    p.style.animationDelay = (-Math.random() * 20) + 's';
+    p.style.opacity = Math.random() * .5 + .3;
+    pc.appendChild(p);
+  }
+})();
+
+/* ============ CARDS ============ */
+var grid = document.getElementById('cardGrid');
+DATA.forEach(function(a, i){
+  var total = 3 + a.pg.length + 1;
+  var card = document.createElement('div');
+  card.className = 'card reveal tilt';
+  card.style.setProperty('--c1', a.c1);
+  card.style.setProperty('--c2', a.c2);
+  card.innerHTML =
+    '<div class="card-inner">' +
+      '<div class="card-top">' +
+        '<div class="card-icon">' + a.ic + '</div>' +
+        '<div class="card-code">' + a.c + '</div>' +
+      '</div>' +
+      '<h3 class="card-subject">' + a.s + '</h3>' +
+      '<p class="card-topic">' + a.t + '</p>' +
+      '<div class="card-meta">' +
+        '<span class="card-pages">' + total + ' Pages</span>' +
+        '<span class="card-open">Open <span class="arw">→</span></span>' +
+      '</div>' +
+    '</div>';
+  card.addEventListener('click', function(){ openAssignment(i); });
+  grid.appendChild(card);
+});
+
+/* ============ VIEWER ============ */
+var viewer = document.getElementById('viewer');
+var vPages = document.getElementById('vPages');
+var vStage = document.getElementById('vStage');
+var vInd = document.getElementById('vInd');
+var vTitle = document.getElementById('vTitle');
+var vZoomVal = document.getElementById('vZoomVal');
+var vZoom = 1, vCurrent = 0, vTotal = 0, vNodes = [];
+
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+
+function buildPages(a){
+  var html = [];
+  html.push(
+    '<section class="page cover"><div class="cover-frame">' +
+      '<div class="cv-college">C. M. COLLEGE</div>' +
+      '<div class="cv-sub">(ARTS &amp; COMMERCE), DARBHANGA</div>' +
+      '<div class="cv-rule"></div>' +
+      '<div class="cv-session">B.Com. Semester III</div>' +
+      '<div class="cv-session">Session : 2025–29</div>' +
+      '<div class="cv-gap"></div>' +
+      '<div class="cv-assign">ASSIGNMENT</div>' +
+      '<div class="cv-paper">Paper : ' + a.c + '</div>' +
+      '<div class="cv-subject">' + a.s.toUpperCase() + '</div>' +
+      '<div class="cv-topic">' + a.t.toUpperCase() + '</div>' +
+      '<div class="cv-gap"></div><div class="cv-rule"></div>' +
+      '<div class="cv-info">' +
+        '<div class="cvi-title">Submitted By :</div>' +
+        '<div class="cvi-name">AMIL ARFAT</div>' +
+        '<div class="cvi-row"><span>College Roll No.</span><span>: 418</span></div>' +
+        '<div class="cvi-row"><span>University Roll No.</span><span>: 252021010402</span></div>' +
+        '<div class="cvi-row"><span>Registration No.</span><span>: 252021010402</span></div>' +
+        '<div class="cvi-row"><span>Faculty</span><span>: Commerce</span></div>' +
+      '</div></div></section>'
+  );
+  html.push(
+    '<section class="page"><div class="margin-line"></div><div class="page-body">' +
+      '<h2>Acknowledgement</h2>' +
+      '<p>I would like to express my sincere gratitude to my subject teacher of <span class="u-green">' + esc(a.s) + '</span>, Department of Commerce, C. M. College (Arts &amp; Commerce), Darbhanga, for the valuable guidance, constant encouragement and support extended to me during the preparation of this assignment on the topic <b>"' + esc(a.t) + '"</b>.</p>' +
+      '<p>I am also thankful to the Principal and all the faculty members of the Department of Commerce for providing a healthy academic environment and the necessary study material that helped me in completing this work.</p>' +
+      '<p>I extend my heartfelt thanks to my classmates and friends who helped me in collecting information, discussing the topic and giving valuable suggestions from time to time.</p>' +
+      '<p>Finally, I am deeply grateful to my parents for their constant support and motivation, without which this assignment would not have been possible.</p>' +
+      '<p style="margin-top:32px; margin-left:auto; width:60%; text-align:right;"><b>AMIL ARFAT</b><br>B.Com. Semester III<br>Roll No. – 418</p>' +
+    '</div><div class="pg-num">2</div></section>'
+  );
+  var idxRows = '<tr><th style="width:13%;text-align:center;">S. No.</th><th>Contents</th><th style="width:17%;text-align:center;">Page No.</th></tr>';
+  a.ix.forEach(function(row, i){
+    idxRows += '<tr><td class="c1">' + (i+1) + '.</td><td>' + row[0] + '</td><td class="c3">' + row[1] + '</td></tr>';
+  });
+  html.push(
+    '<section class="page"><div class="margin-line"></div><div class="page-body">' +
+      '<h2 class="center">Index</h2><table class="idx">' + idxRows + '</table>' +
+    '</div><div class="pg-num">3</div></section>'
+  );
+  a.pg.forEach(function(bodyHtml, i){
+    html.push(
+      '<section class="page"><div class="margin-line"></div>' +
+      '<div class="page-body">' + bodyHtml + '</div>' +
+      '<div class="pg-num">' + (i+4) + '</div></section>'
+    );
+  });
+  var bibHtml = '<h2>Bibliography</h2>';
+  a.bib.forEach(function(item, i){ bibHtml += '<p>' + (i+1) + '. ' + item + '</p>'; });
+  bibHtml += '<p style="margin-top:48px;text-align:center;letter-spacing:3px;">* * * * *</p>';
+  bibHtml += '<p style="margin-top:32px;text-align:right;">Student Signature: ____________________</p>';
+  html.push(
+    '<section class="page"><div class="margin-line"></div>' +
+    '<div class="page-body">' + bibHtml + '</div>' +
+    '<div class="pg-num">' + (4 + a.pg.length) + '</div></section>'
+  );
+  return html.join('');
+}
+
+function updateVInd(){ vInd.textContent = (vCurrent + 1) + ' / ' + vTotal; }
+
+function goVPage(i, smooth){
+  vCurrent = Math.max(0, Math.min(vTotal - 1, i));
+  var el = vNodes[vCurrent];
+  if (!el) return;
+  var top = el.offsetTop - 16;
+  vStage.scrollTo({ top: top < 0 ? 0 : top, behavior: smooth === false ? 'auto' : 'smooth' });
+  updateVInd();
+}
+
+function applyVZoom(){
+  if (!vNodes[0]) return;
+  var avail = vStage.clientWidth - 24;
+  var pageW = vNodes[0].offsetWidth;
+  var base = Math.min(1, avail / pageW);
+  var s = base * vZoom;
+  vPages.style.transform = 'scale(' + s + ')';
+  vZoomVal.textContent = Math.round(vZoom * 100) + '%';
+}
+
+function openAssignment(i){
+  var a = DATA[i];
+  vPages.innerHTML = buildPages(a);
+  vNodes = Array.prototype.slice.call(vPages.querySelectorAll('.page'));
+  vTotal = vNodes.length;
+  vCurrent = 0;
+  vZoom = 1;
+  vTitle.textContent = a.c + ' — ' + a.s;
+  viewer.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  vStage.scrollTop = 0;
+  setTimeout(function(){ applyVZoom(); updateVInd(); }, 50);
+}
+
+function closeViewer(){
+  viewer.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('vBack').addEventListener('click', closeViewer);
+document.getElementById('vPrev').addEventListener('click', function(){ goVPage(vCurrent - 1); });
+document.getElementById('vNext').addEventListener('click', function(){ goVPage(vCurrent + 1); });
+document.getElementById('vZoomIn').addEventListener('click', function(){ vZoom = Math.min(2.2, vZoom + 0.1); applyVZoom(); });
+document.getElementById('vZoomOut').addEventListener('click', function(){ vZoom = Math.max(0.4, vZoom - 0.1); applyVZoom(); });
+document.getElementById('vFit').addEventListener('click', function(){ vZoom = 1; applyVZoom(); goVPage(0, false); });
+
+document.addEventListener('keydown', function(e){
+  if (!viewer.classList.contains('open')) return;
+  if (e.key === 'Escape') closeViewer();
+  else if (e.key === 'ArrowRight' || e.key === 'PageDown') goVPage(vCurrent + 1);
+  else if (e.key === 'ArrowLeft' || e.key === 'PageUp') goVPage(vCurrent - 1);
+  else if (e.key === 'Home') goVPage(0);
+  else if (e.key === 'End') goVPage(vTotal - 1);
+});
+
+var vtick = false;
+vStage.addEventListener('scroll', function(){
+  if (vtick) return;
+  vtick = true;
+  requestAnimationFrame(function(){
+    var mid = vStage.scrollTop + vStage.clientHeight * 0.35;
+    var best = 0, bd = Infinity;
+    for (var j = 0; j < vNodes.length; j++){
+      var d = Math.abs(vNodes[j].offsetTop - mid);
+      if (d < bd){ bd = d; best = j; }
+    }
+    if (best !== vCurrent){ vCurrent = best; updateVInd(); }
+    vtick = false;
+  });
+}, { passive:true });
+
+window.addEventListener('resize', function(){
+  if (viewer.classList.contains('open')) applyVZoom();
+});
+
+/* ============ NAV ============ */
+var nav = document.getElementById('nav');
+window.addEventListener('scroll', function(){
+  if (window.scrollY > 40) nav.classList.add('scrolled');
+  else nav.classList.remove('scrolled');
+}, { passive:true });
+
+var burger = document.getElementById('burger');
+var navLinks = document.getElementById('navLinks');
+burger.addEventListener('click', function(){
+  burger.classList.toggle('open');
+  navLinks.classList.toggle('open');
+});
+navLinks.addEventListener('click', function(e){
+  if (e.target.tagName === 'A'){
+    burger.classList.remove('open');
+    navLinks.classList.remove('open');
+  }
+});
+
+/* ============ REVEAL ============ */
+var reveals = document.querySelectorAll('.reveal');
+if ('IntersectionObserver' in window){
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(en, i){
+      if (en.isIntersecting){
+        var el = en.target;
+        setTimeout(function(){ el.classList.add('in'); }, (i % 3) * 110);
+        io.unobserve(el);
+      }
+    });
+  }, { threshold:.12, rootMargin:'0px 0px -60px 0px' });
+  reveals.forEach(function(el){ io.observe(el); });
+} else {
+  reveals.forEach(function(el){ el.classList.add('in'); });
+}
+
+/* ============ 3D TILT ============ */
+var fine = window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+var reduce = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+if (fine && !reduce){
+  document.querySelectorAll('.tilt').forEach(function(card){
+    var raf = null, tx = 0, ty = 0;
+    function apply(){
+      raf = null;
+      card.style.transform = 'perspective(1200px) rotateX(' + ty.toFixed(2) + 'deg) rotateY(' + tx.toFixed(2) + 'deg) translateY(-10px) scale(1.02)';
+    }
+    card.addEventListener('mousemove', function(e){
+      var r = card.getBoundingClientRect();
+      var px = (e.clientX - r.left) / r.width;
+      var py = (e.clientY - r.top) / r.height;
+      card.style.setProperty('--mx', (px*100) + '%');
+      card.style.setProperty('--my', (py*100) + '%');
+      tx = (px - 0.5) * 18;
+      ty = (0.5 - py) * 18;
+      if (!raf) raf = requestAnimationFrame(apply);
+    });
+    card.addEventListener('mouseleave', function(){
+      if (raf){ cancelAnimationFrame(raf); raf = null; }
+      card.style.transform = '';
+    });
+  });
+}
+
+/* ============ NAME PARALLAX ============ */
+var heroName = document.getElementById('heroName');
+if (fine && !reduce && heroName){
+  var targetX = 0, targetY = 0, curX = 0, curY = 0;
+  window.addEventListener('mousemove', function(e){
+    targetX = (e.clientX / window.innerWidth - 0.5) * 14;
+    targetY = (e.clientY / window.innerHeight - 0.5) * -10;
+  }, { passive:true });
+  function tick(){
+    curX += (targetX - curX) * 0.08;
+    curY += (targetY - curY) * 0.08;
+    heroName.style.transform = 'rotateY(' + curX.toFixed(2) + 'deg) rotateX(' + curY.toFixed(2) + 'deg)';
+    requestAnimationFrame(tick);
+  }
+  tick();
+}
+
+document.getElementById('year').textContent = new Date().getFullYear();
+
+})();
+</script>
+</body>
+</html>
